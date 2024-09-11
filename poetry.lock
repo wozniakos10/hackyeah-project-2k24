@@ -290,7 +290,10 @@ files = [
 [package.dependencies]
 astroid = ">=3.2.4,<=3.3.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
-dill = {version = ">=0.3.6", markers = "python_version >= \"3.11\""}
+dill = [
+    {version = ">=0.3.7", markers = "python_version >= \"3.12\""},
+    {version = ">=0.3.6", markers = "python_version >= \"3.11\" and python_version < \"3.12\""},
+]
 isort = ">=4.2.5,<5.13.0 || >5.13.0,<6"
 mccabe = ">=0.6,<0.8"
 platformdirs = ">=2.2.0"
@@ -415,5 +418,5 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 
 [metadata]
 lock-version = "2.0"
-python-versions = "3.11"
-content-hash = "d89bcdd1d20a81d86e2407e67bc59201270804b3b49707a3c200a0ec9ed60871"
+python-versions = "^3.11"
+content-hash = "c79b1e8be41bb724dba5688b85b4087d271012326d6c0f42575e00c9671ad3be"
