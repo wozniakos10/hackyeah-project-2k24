@@ -16,4 +16,3 @@ poetry install
 # activating poetry environment
 poetry shell
 ```
-
