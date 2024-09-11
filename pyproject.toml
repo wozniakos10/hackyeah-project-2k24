@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "hackyeah_project_lib", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "3.11"
+python = "^3.11"
 
 
 [tool.poetry.group.dev.dependencies]
