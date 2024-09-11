@@ -1,0 +1,71 @@
+name: Check Code Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+    # Allows manual triggering of the workflow
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  pre-commit-checks:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Download pre-commit
+        run: |
+          pip install pre-commit
+
+      - name: Run pre-commit checks
+        run: |
+          pre-commit run --all-files
+
+      - name: Download pylint
+        run: |
+          pip install pylint
+
+      - name: Run pylint
+        run: |
+          pylint src/ --max-line-length=120
+        continue-on-error: true
+
+  run-tests:
+    runs-on: ubuntu-22.04
+    needs: pre-commit-checks
+
+    steps:
+      # cloning repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+      #setting up python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install dependencies
+        run: |
+          poetry install --with cicd
+
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          export PYTHONPATH=$PYTHONPATH:$PWD/src:$PWD/tests
+          cd ./tests
+          pytest --envfile=local.env
