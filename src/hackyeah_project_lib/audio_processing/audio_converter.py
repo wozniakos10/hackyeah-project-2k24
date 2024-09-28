@@ -1,7 +1,12 @@
+import logging
 import os
 from typing import Any
 
 from moviepy.editor import AudioFileClip, VideoFileClip
+
+from hackyeah_project_lib.utils.logger import get_configured_logger
+
+logger = get_configured_logger("app_logger", log_file="logs/app.log", level=logging.DEBUG)
 
 
 class VideoConverter:
@@ -38,11 +43,16 @@ class AudioConverter:
     def __init__(self, path: str) -> None:
         self.mp3_path = path
 
-    def mp3towav(self, path_to_wav: str) -> None:
+    def mp3towav(self, path_to_wav: str) -> bool:
         """Konwersja MP3 do WAV"""
-        audio = AudioFileClip(self.mp3_path)
-        audio.write_audiofile(path_to_wav, codec="pcm_s16le")
-        print(f"Konwersja MP3 do WAV zakończona: {path_to_wav}")
+        try:
+            audio = AudioFileClip(self.mp3_path)
+            audio.write_audiofile(path_to_wav, codec="pcm_s16le")
+            print(f"Konwersja MP3 do WAV zakończona: {path_to_wav}")
+        except Exception as e:
+            logger.error(f"There was error: {e}")
+            return False
+        return True
 
 
 if __name__ == "__main__":
