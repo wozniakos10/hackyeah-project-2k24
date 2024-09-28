@@ -21,6 +21,7 @@ boto3 = "^1.35.29"
 nltk = "^3.9.1"
 librosa = "^0.10.2.post1"
 langfuse = "^2.51.2"
+google-cloud-aiplatform = "^1.68.0"
 
 [build-system]
 requires = ["poetry-core"]
