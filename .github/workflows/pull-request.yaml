@@ -61,8 +61,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install --with cicd
-
+          poetry install
       - name: Run tests
         run: |
           source .venv/bin/activate
