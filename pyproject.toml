@@ -7,9 +7,13 @@ readme = "README.md"
 packages = [{include = "hackyeah_project_lib", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 pydantic-settings = "^2.5.2"
 openai = "^1.50.2"
+moviepy = "^1.0.3"
+
+
+[tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
 pylint = "^3.2.7"
 black = "^24.8.0"

@@ -31,9 +31,14 @@ class VideoConverter:
         video.audio.write_audiofile(path_to_wav, codec="pcm_s16le")
         print(f"Konwersja MP4 do WAV zakończona: {path_to_wav}")
 
-    def mp3towav(self, mp3_path: str, path_to_wav: str) -> None:
+
+class AudioConverter:
+    def __init__(self, path: str) -> None:
+        self.mp3_path = path
+
+    def mp3towav(self, path_to_wav: str) -> None:
         """Konwersja MP3 do WAV"""
-        audio = AudioFileClip(mp3_path)
+        audio = AudioFileClip(self.mp3_path)
         audio.write_audiofile(path_to_wav, codec="pcm_s16le")
         print(f"Konwersja MP3 do WAV zakończona: {path_to_wav}")
 
