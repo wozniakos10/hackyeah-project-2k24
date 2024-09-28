@@ -25,6 +25,10 @@ google-cloud-aiplatform = "^1.68.0"
 pydantic = "^2.9.2"
 types-pyyaml = "^6.0.12.20240917"
 mypy = "^1.11.2"
+moviepy = "^1.0.3"
+xgboost = "^2.1.1"
+matplotlib = "^3.9.2"
+seaborn = "^0.13.2"
 
 [build-system]
 requires = ["poetry-core"]
