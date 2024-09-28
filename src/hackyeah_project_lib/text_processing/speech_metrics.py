@@ -22,8 +22,8 @@ class SimpleSpeechIdentifier:
                     "Dosyć łatwy do przeczytania. Polski konwersacyjny dla turystów.",
                     "Prosty polski. Zrozumiały dla uczniów w wieku 13-15 lat.",
                     "Dosyć trudny do przeczytania. Zawiera wiele złożonych słów",
-                    "Bardzo trudny do przeczytania. Najlepiej zrozumiały dla absolwentów uniwersytetu."
-                ]
+                    "Bardzo trudny do przeczytania. Najlepiej zrozumiały dla absolwentów uniwersytetu.",
+                ],
             }
         )
 
@@ -58,28 +58,32 @@ class SimpleSpeechIdentifier:
 
     def _get_final_score(self, gun_w: float = 0.7, fk_w: float = 0.3) -> float:
         if gun_w + fk_w != 1:
-            raise ValueError('Incorrect weight coefficient')
+            raise ValueError("Incorrect weight coefficient")
 
-        # Obliczanie każdej z metryk
+        # calculate metrics and convert them to avg age of recipient
         gunning_age = self.get_gunning_metric() + 5
         flesch_age = self.get_flesh_kincaid_metric() + 6
 
-        # Obliczanie średniej ważonej ustandaryzowanych metryk
-        final_metric = (gunning_age * gun_w + flesch_age * fk_w)
+        final_metric = gunning_age * gun_w + flesch_age * fk_w  # weighted sum
 
         return final_metric
 
     def output_msg(self) -> str:
         final_score = self._get_final_score()
-        print(f'{final_score=}')
+        print(f"{final_score=}")
 
-        # Znalezienie odpowiadającego przedziału w tabeli
-        row = self.scores_df[(self.scores_df['min_age'] <= final_score) & (self.scores_df['max_age'] > final_score)].iloc[0]
+        # find correct row from table
+        row = self.scores_df[
+            (self.scores_df["min_age"] <= final_score) & (self.scores_df["max_age"] > final_score)
+        ].iloc[0]
 
-        return row['notes']
+        return str(row["notes"])
 
-    def __repr__(self):
-        return f'{self.get_gunning_metric()=} ; {self.get_flesh_kincaid_metric()=} ; {self._get_final_score()=} ; {self.output_msg()=}'
+    def __repr__(self) -> str:
+        return (
+            f"{self.get_gunning_metric()=} ; {self.get_flesh_kincaid_metric()=} ; "
+            f"{self._get_final_score()=} ; {self.output_msg()=}"
+        )
 
-    def __str__(self):
-        return f'{self.get_gunning_metric()=} ; {self.get_flesh_kincaid_metric()=}'
+    def __str__(self) -> str:
+        return f"{self.get_gunning_metric()=} ; {self.get_flesh_kincaid_metric()=}"
