@@ -2,16 +2,16 @@ import nltk
 import pandas as pd
 from nltk.tokenize import RegexpTokenizer
 
-nltk.download('punkt')
-nltk.download('punkt_tab')
-nltk.download('cmudict')
+nltk.download("punkt")
+nltk.download("punkt_tab")
+nltk.download("cmudict")
 
 
 class SimpleSpeechIdentifier:
     def __init__(self, text: str):
         self.raw_text = text
-        self.sentences = nltk.sent_tokenize(self.raw_text, language='polish')
-        self._tokenizer = RegexpTokenizer(r'\w+')  # tokenizer that excludes punctuation
+        self.sentences = nltk.sent_tokenize(self.raw_text, language="polish")
+        self._tokenizer = RegexpTokenizer(r"\w+")  # tokenizer that excludes punctuation
         self.words = self._tokenizer.tokenize(self.raw_text)
         self.scores_df = pd.DataFrame(
             {
@@ -44,8 +44,8 @@ class SimpleSpeechIdentifier:
         return count
 
     def get_gunning_metric(self) -> float:
-        COMPLEX_WORD_SYLL_NUM = 4  # word is complex if contains >= X syllables
-        complex_words = [word for word in self.words if self._count_syllables(word) >= COMPLEX_WORD_SYLL_NUM]
+        complex_word_syll_num = 4  # word is complex if contains >= X syllables
+        complex_words = [word for word in self.words if self._count_syllables(word) >= complex_word_syll_num]
 
         # calculate Gunning Fog index
         return 0.4 * (len(self.words) / len(self.sentences) + 100 * (len(complex_words) / len(self.words)))

@@ -6,7 +6,7 @@ authors = ["wozniakos10 <wozniakos10@gmail.com>"]
 readme = "README.md"
 packages = [{include = "hackyeah_project_lib", from = "src"}]
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.dependencies]
 python = "^3.10"
 pydantic-settings = "^2.5.2"
 openai = "^1.50.2"
@@ -20,6 +20,18 @@ streamlit = "^1.38.0"
 boto3 = "^1.35.29"
 nltk = "^3.9.1"
 librosa = "^0.10.2.post1"
+langfuse = "^2.51.2"
+google-cloud-aiplatform = "^1.68.0"
+pydantic = "^2.9.2"
+types-pyyaml = "^6.0.12.20240917"
+mypy = "^1.11.2"
+moviepy = "^1.0.3"
+xgboost = "^2.1.1"
+matplotlib = "^3.9.2"
+seaborn = "^0.13.2"
+opencv-python = "^4.10.0.84"
+ultralytics = "^8.2.103"
+pydub = "^0.25.1"
 
 [build-system]
 requires = ["poetry-core"]
