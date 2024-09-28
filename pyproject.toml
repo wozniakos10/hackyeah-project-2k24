@@ -6,7 +6,7 @@ authors = ["wozniakos10 <wozniakos10@gmail.com>"]
 readme = "README.md"
 packages = [{include = "hackyeah_project_lib", from = "src"}]
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.dependencies]
 python = "^3.10"
 pydantic-settings = "^2.5.2"
 openai = "^1.50.2"
