@@ -24,6 +24,11 @@ repos:
     hooks:
       - id: mypy
         args: [--config-file=mypy.ini]
+        additional_dependencies:
+          - pydantic
+          - pydantic-settings
+          - types-PyYAML
+          - pytest-stub
 
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.10.1
