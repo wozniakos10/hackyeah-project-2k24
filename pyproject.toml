@@ -8,6 +8,8 @@ packages = [{include = "hackyeah_project_lib", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+nltk = "^3.9.1"
+librosa = "^0.10.2.post1"
 
 
 [tool.poetry.group.dev.dependencies]
