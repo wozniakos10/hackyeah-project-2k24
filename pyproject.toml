@@ -6,24 +6,20 @@ authors = ["wozniakos10 <wozniakos10@gmail.com>"]
 readme = "README.md"
 packages = [{include = "hackyeah_project_lib", from = "src"}]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-nltk = "^3.9.1"
-librosa = "^0.10.2.post1"
-
-
 [tool.poetry.group.dev.dependencies]
+python = "^3.10"
+pydantic-settings = "^2.5.2"
+openai = "^1.50.2"
 pytest = "^8.3.3"
 pylint = "^3.2.7"
 black = "^24.8.0"
 pre-commit = "^3.8.0"
-
-
-
-[tool.poetry.group.cicd.dependencies]
-pytest = "^8.3.3"
 pytest-cov = "^5.0.0"
 pytest-dotenv = "^0.5.2"
+streamlit = "^1.38.0"
+boto3 = "^1.35.29"
+nltk = "^3.9.1"
+librosa = "^0.10.2.post1"
 
 [build-system]
 requires = ["poetry-core"]
