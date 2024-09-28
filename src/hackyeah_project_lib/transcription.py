@@ -1,7 +1,5 @@
+import openai
 from typing import cast
-
-from langfuse.openai import openai
-
 from hackyeah_project_lib.config import settings
 
 client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
