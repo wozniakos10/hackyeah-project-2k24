@@ -12,6 +12,9 @@ RUN apt-get update && apt-get install -y \
 # Install poetry
 RUN pip install poetry
 
+# Set PYTHONPATH
+ENV PYTHONPATH="${PYTHONPATH}:/app/src"
+
 # Copy only requirements to cache them in docker layer
 COPY pyproject.toml poetry.lock* /app/
 
