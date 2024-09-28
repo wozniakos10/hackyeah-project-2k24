@@ -2,11 +2,10 @@ import os
 import uuid  # Import the uuid module
 
 import streamlit as st
-import os
-import uuid  # Import the uuid module
+
+from hackyeah_project_lib.audio_processing.transcription import transcribe_audio
+from hackyeah_project_lib.audio_processing.transcription_srt import transcribe_audio_srt
 from hackyeah_project_lib.config import settings
-from hackyeah_project_lib.transcription import transcribe_audio
-from hackyeah_project_lib.transcription_srt import transcribe_audio_srt
 
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 

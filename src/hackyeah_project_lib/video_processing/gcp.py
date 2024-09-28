@@ -1,3 +1,5 @@
+from typing import cast
+
 import vertexai
 from google.oauth2 import service_account
 from vertexai.generative_models import GenerativeModel, Part, SafetySetting
@@ -90,29 +92,28 @@ safety_settings = [
 ]
 
 
-def send_message_to_gemini(file_url, system_message):
+def send_message_to_gemini(file_url: str, system_message: str) -> str:
     info = AUTH_JSON
     storage_cred = service_account.Credentials.from_service_account_info(info)
     vertexai.init(project="rich-ceiling-437018-b5", credentials=storage_cred)
-    
+
     model = GenerativeModel("gemini-1.5-pro-002")
-    
+
     video_part = Part.from_uri(
         mime_type="video/mp4",
         uri=file_url,
     )
-    
+
     prompt = f"""{system_message}
-    
+
     Questions:
     - What language is the person speaking and what does the person say at that time?"""
-    
+
     responses = model.generate_content(
         [video_part, prompt],
         generation_config=generation_config,
         safety_settings=safety_settings,
         stream=False,
     )
-    
-    return responses.text
 
+    return cast(str, responses.text)

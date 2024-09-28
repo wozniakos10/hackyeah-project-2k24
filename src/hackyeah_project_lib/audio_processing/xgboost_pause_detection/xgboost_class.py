@@ -2,7 +2,7 @@ import joblib
 import pandas as pd
 
 
-class xgboostclass:
+class XGBoostClass:
     def __init__(self, model_path: str, scaler_path: str) -> None:
         self.model_path = model_path
         self.scaler_path = scaler_path

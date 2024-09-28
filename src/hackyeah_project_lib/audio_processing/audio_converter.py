@@ -10,12 +10,14 @@ class VideoConverter:
         self.file_size_mb = self.__get_mp4_size(self.mp4_path)
         self.duration = self.__get_mp4_duration(self.mp4_path)
 
-    def __get_mp4_size(self, path: str) -> float:
+    @staticmethod
+    def __get_mp4_size(path: str) -> float:
         file_size = os.path.getsize(path)  # Odczyt rozmiaru pliku w bajtach
         file_size_mb = file_size / (1024 * 1024)  # Konwersja na MB
         return file_size_mb
 
-    def __get_mp4_duration(self, path: str) -> Any:
+    @staticmethod
+    def __get_mp4_duration(path: str) -> Any:
         video = VideoFileClip(path)
         duration_seconds = video.duration  # Długość nagrania w sekundach
         return duration_seconds

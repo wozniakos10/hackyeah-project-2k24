@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from hackyeah_project_lib.llm_processor.prompts import Prompts
+from hackyeah_project_lib.text_processing.llm_processor.prompts import Prompts
 
 
 class TextPropertiesDetectedByLLM(BaseModel):

@@ -16,7 +16,8 @@ class AudioFeatures:
         self.volume = self.__get_mp4_volume(self.path)[0]
         self.volume_interpretation = self.__get_mp4_volume(self.path)[1]
 
-    def __get_mp4_volume(self, path: str) -> tuple[int, str]:
+    @staticmethod
+    def __get_mp4_volume(path: str) -> tuple[int, str]:
         y, sr = librosa.load(path)
         rms = np.sqrt(np.mean(y**2))
         db = librosa.amplitude_to_db(rms)

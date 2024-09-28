@@ -1,15 +1,15 @@
 import pytest
 
-from hackyeah_project_lib.utils import simple_speech_metrics
+from hackyeah_project_lib.text_processing import speech_metrics
 
-text1 = simple_speech_metrics.Text(
+text1 = speech_metrics.Text(
     """
     To jest przykładowy tekst, który chcemy ocenić pod kątem trudności czytania.
     Zawiera on kilka złożonych słów, aby sprawdzić działanie współczynnika.
     """
 )
 
-text2 = simple_speech_metrics.Text(
+text2 = speech_metrics.Text(
     """
     Już w roku 1952 amerykański biznesmen Robert Gunning sformułował algorytm sprawdzania trudności odbioru tekstu.
     Współczynnik mglistości (Fog Index) Roberta Gunninga jest najpopularniejszym do dziś wykorzystywanym narzędziem
@@ -30,7 +30,7 @@ text2 = simple_speech_metrics.Text(
         (text2, 9),
     ],
 )
-def test_count_sentences(text: simple_speech_metrics.Text, sentences_num: int) -> None:
+def test_count_sentences(text: speech_metrics.Text, sentences_num: int) -> None:
     assert len(text.sentences) == sentences_num
 
 
@@ -41,7 +41,7 @@ def test_count_sentences(text: simple_speech_metrics.Text, sentences_num: int) -
         (text2, 119),
     ],
 )
-def test_count_words(text: simple_speech_metrics.Text, words_num: int) -> None:
+def test_count_words(text: speech_metrics.Text, words_num: int) -> None:
     assert len(text.words) == words_num
 
 
@@ -61,7 +61,7 @@ def test_count_syllables(word: str, correct_syllables_num: int) -> None:
         (text2, 8.65),
     ],
 )
-def test_gunning_metric(text: simple_speech_metrics.Text, gun_metric: float) -> None:
+def test_gunning_metric(text: speech_metrics.Text, gun_metric: float) -> None:
     min, max = gun_metric * 0.85, gun_metric * 1.15
     assert min < text.get_gunning_metric() < max
 
@@ -74,6 +74,6 @@ def test_gunning_metric(text: simple_speech_metrics.Text, gun_metric: float) -> 
         (text2, 34.88),
     ],
 )
-def test_flesch_metric(text: simple_speech_metrics.Text, flesch_metric: float) -> None:
+def test_flesch_metric(text: speech_metrics.Text, flesch_metric: float) -> None:
     min, max = flesch_metric * 0.85, flesch_metric * 1.15
     assert min < text.get_flesh_metric() < max

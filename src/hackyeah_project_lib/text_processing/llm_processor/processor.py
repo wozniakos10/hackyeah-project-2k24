@@ -2,8 +2,8 @@ from typing import cast
 
 from openai import OpenAI
 
-from hackyeah_project_lib.llm_processor.models import RefinedTextProperties, TextPropertiesDetectedByLLM
-from hackyeah_project_lib.llm_processor.prompts import Prompts
+from hackyeah_project_lib.text_processing.llm_processor.models import RefinedTextProperties, TextPropertiesDetectedByLLM
+from hackyeah_project_lib.text_processing.llm_processor.prompts import Prompts
 
 
 class LLMProcessor:

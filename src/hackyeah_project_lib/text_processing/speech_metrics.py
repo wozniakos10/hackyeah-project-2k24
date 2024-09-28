@@ -14,7 +14,8 @@ class Text:
         self.words = self._tokenizer.tokenize(self.raw_text)
         # self.words = nltk.word_tokenize(self.raw_text, language='polish')
 
-    def _count_syllables(self, word: str) -> int:
+    @staticmethod
+    def _count_syllables(word: str) -> int:
         vowels = "aeiouyąęó"
         count = 0
         on_vowel = False
@@ -30,15 +31,15 @@ class Text:
         return count
 
     def get_gunning_metric(self) -> float:
-        COMPLEX_WORD_SYLL_NUM = 4  # word is complex if contains >= X syllables
-        complex_words = [word for word in self.words if self._count_syllables(word) >= COMPLEX_WORD_SYLL_NUM]
+        complex_word_syll_num = 4  # word is complex if contains >= X syllables
+        complex_words = [word for word in self.words if self._count_syllables(word) >= complex_word_syll_num]
 
         # calculate Gunning Fog index
         return 0.4 * (len(self.words) / len(self.sentences) + 100 * (len(complex_words) / len(self.words)))
 
     def get_lix_metric(self) -> float:
-        COMPLEX_WORD_CHAR_NUM = 7
-        complex_words = [word for word in self.words if self._count_syllables(word) >= COMPLEX_WORD_CHAR_NUM]
+        complex_word_char_num = 7
+        complex_words = [word for word in self.words if self._count_syllables(word) >= complex_word_char_num]
 
         # calculate Lesbarhets index
         return len(self.words) / len(self.sentences) + 100 * (len(complex_words) / len(self.words))

@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError
@@ -17,7 +18,7 @@ def get_s3_client() -> boto3.client:
     )
 
 
-def upload_file(file_name: str, bucket: str | None = None, object_name: str | None = None) -> bool:
+def upload_file(file_name: Any, bucket: str | None = None, object_name: str | None = None) -> bool:
     """Upload a file to an S3 bucket
 
     :param file_name: File to upload (path or file-like object)

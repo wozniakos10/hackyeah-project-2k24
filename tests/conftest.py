@@ -1,6 +1,6 @@
 import pytest
 
-from hackyeah_project_lib.llm_processor.processor import LLMProcessor
+from hackyeah_project_lib.text_processing.llm_processor.processor import LLMProcessor
 
 
 @pytest.fixture(scope="module")
