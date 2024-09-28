@@ -1,9 +1,11 @@
+from typing import Any
+
 import cv2
 from ultralytics import YOLO
 
 
 # Funkcja do zliczania osób na klatce
-def count_people(results):
+def count_people(results: Any) -> int:
     count = 0
     for result in results:
         # YOLO zwraca detekcje w formie listy obiektów, sprawdzamy klasę (person = 0)
@@ -13,7 +15,7 @@ def count_people(results):
     return count
 
 
-def analyze_people_count(people_count_over_time):
+def analyze_people_count(people_count_over_time: list[tuple[float, int]]) -> dict[str, Any]:
     person_1_appears = None
     person_2_appears = None
     person_2_disappears = None
@@ -36,11 +38,12 @@ def analyze_people_count(people_count_over_time):
         "person_1_disappears": person_1_disappears,
     }
 
+
 # Ścieżka do wideo
-video_path = '/Users/dtomal/Documents/hackyeah-project-2k24/data_mp4/HY_2024_film_11.mp4'
+video_path = "/Users/dtomal/Documents/hackyeah-project-2k24/data_mp4/HY_2024_film_11.mp4"
 
 # Wczytanie modelu YOLO
-model = YOLO('yolov8n-pose.pt')
+model = YOLO("yolov8n-pose.pt")
 
 # Otwórz plik wideo za pomocą OpenCV
 cap = cv2.VideoCapture(video_path)
@@ -86,11 +89,23 @@ print(people_count_over_time)
 analysis = analyze_people_count(people_count_over_time)
 
 # Wyświetl wyniki analizy
-print(f"Pierwsza osoba pojawia się w sekundzie: {analysis['person_1_appears']:.2f}" if analysis['person_1_appears'] else "Brak detekcji pierwszej osoby.")
-print(f"Druga osoba pojawia się w sekundzie: {analysis['person_2_appears']:.2f}" if analysis['person_2_appears'] else "Brak detekcji drugiej osoby.")
-print(f"Druga osoba znika w sekundzie: {analysis['person_2_disappears']:.2f}" if analysis['person_2_disappears'] else "Druga osoba nie zniknęła.")
-print(f"Pierwsza osoba znika w sekundzie: {analysis['person_1_disappears']:.2f}" if analysis['person_1_disappears'] else "Pierwsza osoba nie zniknęła.")
-
-
-
-
+print(
+    f"Pierwsza osoba pojawia się w sekundzie: {analysis['person_1_appears']:.2f}"
+    if analysis["person_1_appears"]
+    else "Brak detekcji pierwszej osoby."
+)
+print(
+    f"Druga osoba pojawia się w sekundzie: {analysis['person_2_appears']:.2f}"
+    if analysis["person_2_appears"]
+    else "Brak detekcji drugiej osoby."
+)
+print(
+    f"Druga osoba znika w sekundzie: {analysis['person_2_disappears']:.2f}"
+    if analysis["person_2_disappears"]
+    else "Druga osoba nie zniknęła."
+)
+print(
+    f"Pierwsza osoba znika w sekundzie: {analysis['person_1_disappears']:.2f}"
+    if analysis["person_1_disappears"]
+    else "Pierwsza osoba nie zniknęła."
+)

@@ -1,4 +1,6 @@
 from collections import defaultdict
+from typing import Any
+
 import cv2
 import numpy as np
 from ultralytics import YOLO
@@ -11,7 +13,7 @@ video_path = "/Users/dtomal/Documents/hackyeah-project-2k24/data_mp4/HY_2024_fil
 cap = cv2.VideoCapture(video_path)
 
 # Historia śledzenia
-track_history = defaultdict(lambda: [])
+track_history: dict[float, Any] = defaultdict(lambda: [])
 
 # Pętla po klatkach wideo
 while cap.isOpened():
@@ -24,7 +26,7 @@ while cap.isOpened():
 
         if results is not None and len(results) > 0:
             # Sprawdź, czy wyniki są dostępne
-            if results[0] is not None and hasattr(results[0], 'boxes'):
+            if results[0] is not None and hasattr(results[0], "boxes"):
                 boxes = results[0].boxes.xywh.cpu().numpy()
                 print(results[0])
                 track_ids = results[0].boxes.id.int().cpu().numpy().tolist()
