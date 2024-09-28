@@ -64,11 +64,7 @@ video1 = Part.from_uri(
 )
 text1 = """Look through each frame in the video carefully and answer the question.
 Only base your answers strictly on what information is available in the video attached.
-Do not make up any information that is not part of the video and do not be too verbose.
-
-Questions:
-- When does a red lantern first appear and what is written in the lantern? Provide a timestamp.
-- What language is the person speaking and what does the person say at that time?"""
+Do not make up any information that is not part of the video and do not be too verbose. """
 
 generation_config = {
     "max_output_tokens": 8192,
@@ -93,4 +89,30 @@ safety_settings = [
     ),
 ]
 
-generate()
+
+def send_message_to_gemini(file_url, system_message):
+    info = AUTH_JSON
+    storage_cred = service_account.Credentials.from_service_account_info(info)
+    vertexai.init(project="rich-ceiling-437018-b5", credentials=storage_cred)
+    
+    model = GenerativeModel("gemini-1.5-pro-002")
+    
+    video_part = Part.from_uri(
+        mime_type="video/mp4",
+        uri=file_url,
+    )
+    
+    prompt = f"""{system_message}
+    
+    Questions:
+    - What language is the person speaking and what does the person say at that time?"""
+    
+    responses = model.generate_content(
+        [video_part, prompt],
+        generation_config=generation_config,
+        safety_settings=safety_settings,
+        stream=False,
+    )
+    
+    return responses.text
+
