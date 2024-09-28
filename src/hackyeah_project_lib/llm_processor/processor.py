@@ -1,14 +1,13 @@
 from typing import cast
 
-from openai import OpenAI, models
+from openai import OpenAI
 
-from hackyeah_project_lib.llm_processor.models import TextPropertiesDetectedByLLM, RefinedTextProperties
-from hackyeah_project_lib.llm_processor.prompts import Prompts, TextPropertiesDescriptions
+from hackyeah_project_lib.llm_processor.models import RefinedTextProperties, TextPropertiesDetectedByLLM
+from hackyeah_project_lib.llm_processor.prompts import Prompts
 
 
 class LLMProcessor:
-
-    def __init__(self):
+    def __init__(self) -> None:
         self.openai_client = OpenAI()
 
     @staticmethod
@@ -34,7 +33,7 @@ class LLMProcessor:
         )
         return cast(TextPropertiesDetectedByLLM, completion.choices[0].message.parsed)
 
-    def get_refined_text_properties(self, text) -> RefinedTextProperties:
+    def get_refined_text_properties(self, text: str) -> RefinedTextProperties:
         llm_text_properties = self.get_text_properties_with_llm(text)
         return RefinedTextProperties(
             **llm_text_properties.model_dump(mode="python"),
@@ -47,24 +46,3 @@ class LLMProcessor:
                 if self._check_for_common_passive_voice_properties(phrase)
             ]
         )
-
-
-if __name__ == "__main__":
-    resp = LLMProcessor().get_refined_text_properties(
-        """W budżecie na 2025 rok przeznaczymy ponad 221,7 mld zł na ochronę. Rekordowy wzrost nakładów na ochronę 
-        zdrowia zgodnie z ustawą o blisko 31,7 mld zł, to jest to 0,6%. 0,5 mld zł na realizację programu In Vitro, 
-        8,4 mld zł na realizację świadczeń aktywny rodzic, 62,8 mld zł na program Rodzina 800+."""
-    )
-    print(resp)
-    resp = LLMProcessor().get_refined_text_properties(
-        """Audytem objęliśmy 96 podmiotów, a łączna kwota badanych środków publicznych to około 100 miliardów złotych.
-         W toku działań stwierdziliśmy m.in. niegospodarne i niecelowe wydatkowanie środków publicznych, udzielenie 
-         dotacji podmiotów, które nie spełniały kryteriów konkursowych."""
-    )
-    print(resp)
-    resp = LLMProcessor().get_refined_text_properties(
-        """W pierwszej połowie lipca przeprowadziliśmy ogólnopolską akcję wzmożonej kontroli przesyłek pocztowych oraz 
-        kuriarskich. Funkcjonariusze przeprowadzili kontrolę w 18 punktach w całej Polsce. Wrześniowa zmiana warunków 
-        oprocentowania obligacji oszczędnościowych wynika z potrzeby ich dostosowania do bieżących realiów rynkowych."""
-    )
-    print(resp)

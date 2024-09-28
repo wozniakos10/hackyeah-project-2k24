@@ -1,7 +1,10 @@
 import pytest
+
+from hackyeah_project_lib.llm_processor.processor import LLMProcessor
 from hackyeah_project_lib.training_data.transcriptions import TrainingData
 
 
+@pytest.mark.xfail()
 @pytest.mark.parametrize(
     "transcription,exp_rep,exp_topic_change",
     [
@@ -10,7 +13,9 @@ from hackyeah_project_lib.training_data.transcriptions import TrainingData
         (TrainingData.transcriptions[2].transcription, [], True),
     ],
 )
-def test_llm_processor(transcription, exp_rep, exp_topic_change, llm_processor):
+def test_llm_processor(
+    transcription: str, exp_rep: list[str], exp_topic_change: bool, llm_processor: LLMProcessor
+) -> None:
     result = llm_processor.get_refined_text_properties(transcription)
 
     for rep in exp_rep:

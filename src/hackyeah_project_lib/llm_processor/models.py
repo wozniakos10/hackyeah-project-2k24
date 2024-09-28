@@ -1,4 +1,3 @@
-from astroid.objects import Property
 from pydantic import BaseModel, Field
 
 from hackyeah_project_lib.llm_processor.prompts import Prompts

@@ -4,7 +4,6 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel
 
-
 CURRENT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -20,6 +19,7 @@ class TextPropertiesDescriptions(BaseModel):
 
 class SystemPrompts(BaseModel):
     extract_text_properties: str
+
 
 class PromptsModel(BaseModel):
     text_properties_descriptions: TextPropertiesDescriptions

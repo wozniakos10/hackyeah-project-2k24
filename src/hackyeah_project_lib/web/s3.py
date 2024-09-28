@@ -1,19 +1,23 @@
 import logging
+import os
+
 import boto3
 from botocore.exceptions import ClientError
-import os
+
 from hackyeah_project_lib.config import settings
 
+
 # Initialize S3 client using environment variables
-def get_s3_client():
+def get_s3_client() -> boto3.client:
     return boto3.client(
-        's3',
+        "s3",
         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-        region_name=settings.AWS_DEFAULT_REGION
+        region_name=settings.AWS_DEFAULT_REGION,
     )
 
-def upload_file(file_name, bucket=None, object_name=None):
+
+def upload_file(file_name: str, bucket: str | None = None, object_name: str | None = None) -> bool:
     """Upload a file to an S3 bucket
 
     :param file_name: File to upload (path or file-like object)
@@ -34,7 +38,7 @@ def upload_file(file_name, bucket=None, object_name=None):
     s3_client = get_s3_client()
     try:
         if isinstance(file_name, str):
-            response = s3_client.upload_file(file_name, bucket, object_name)
+            s3_client.upload_file(file_name, bucket, object_name)
         else:
             s3_client.upload_fileobj(file_name, bucket, object_name)
     except ClientError as e:
@@ -42,7 +46,8 @@ def upload_file(file_name, bucket=None, object_name=None):
         return False
     return True
 
-def download_file(object_name, file_name=None, bucket=None):
+
+def download_file(object_name: str, file_name: str | None = None, bucket: str | None = None) -> bool:
     """Download a file from an S3 bucket
 
     :param object_name: S3 object name to download
@@ -63,4 +68,3 @@ def download_file(object_name, file_name=None, bucket=None):
         logging.error(e)
         return False
     return True
-

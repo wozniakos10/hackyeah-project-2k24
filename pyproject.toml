@@ -23,6 +23,8 @@ librosa = "^0.10.2.post1"
 langfuse = "^2.51.2"
 google-cloud-aiplatform = "^1.68.0"
 pydantic = "^2.9.2"
+types-pyyaml = "^6.0.12.20240917"
+mypy = "^1.11.2"
 
 [build-system]
 requires = ["poetry-core"]

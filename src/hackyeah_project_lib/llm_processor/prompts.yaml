@@ -1,44 +1,44 @@
 text_properties_descriptions:
   repetitions: |
-    A list of repeating significant words, excluding small words such as 'zł', 'i', 'tak', etc. If such words do not 
+    A list of repeating significant words, excluding small words such as 'zł', 'i', 'tak', etc. If such words do not
     occur, leave an empty list.
   list_of_topics: |
-    A list of main, general topics discussed in the speech, listed in the order they appear. Each topic should represent 
-    a broad, overarching theme, encompassing related subtopics. Avoid breaking down into detailed issues; focus on key 
+    A list of main, general topics discussed in the speech, listed in the order they appear. Each topic should represent
+    a broad, overarching theme, encompassing related subtopics. Avoid breaking down into detailed issues; focus on key
     thematic areas of the speech. Provide the topics using polish language.
-    
+
     - Topics should be general enough to encompass related information presented in the speech.
     - Avoid listing every minor subtopic as a separate topic.
-    - If several topics in the response actually pertain to one larger topic or if one topic flows logically into 
+    - If several topics in the response actually pertain to one larger topic or if one topic flows logically into
       another, then include only a single general topic.
 
     If the speech does not contain clear topics, leave an empty list.
   numbers: |
-    A list of numerical values mentioned in the speech, including all integers, years, and quantities. If there are no 
+    A list of numerical values mentioned in the speech, including all integers, years, and quantities. If there are no
     numbers in the text, leave an empty list.
   jargon: |
-    A list of specialized or technical terms used in the speech that may be unfamiliar to people not associated with 
-    the given industry. This does not include very well-known and commonly used names nor cases where the text precisely 
+    A list of specialized or technical terms used in the speech that may be unfamiliar to people not associated with
+    the given industry. This does not include very well-known and commonly used names nor cases where the text precisely
     explains the meaning of the word. If there is no jargon in the text, leave an empty list.
   passive_voice: |
-    A list of sentences from the speech that are constructed in the passive voice. In Polish, the passive voice often 
-    ends with "-no", "-to" (e.g., "zrobiono projekt", "przetworzono dane", "podsumowano artykuł") or uses constructions 
-    with the verbs "być" or "zostać" + past participle adjective (e.g., "projekt został zatwierdzony", "raport jest 
-    przygotowywany"). Verbs ending with "-śmy" are not passive voice. If there are no words ending with "-no" or "-to" 
+    A list of sentences from the speech that are constructed in the passive voice. In Polish, the passive voice often
+    ends with "-no", "-to" (e.g., "zrobiono projekt", "przetworzono dane", "podsumowano artykuł") or uses constructions
+    with the verbs "być" or "zostać" + past participle adjective (e.g., "projekt został zatwierdzony", "raport jest
+    przygotowywany"). Verbs ending with "-śmy" are not passive voice. If there are no words ending with "-no" or "-to"
     or words like "być", "zostać", then leave an empty list.
   complicated_words: |
-    A list of words in the speech that may be incomprehensible to people without higher education or that are not 
-    commonly used in everyday conversations, potentially making understanding more difficult. If such words do not 
+    A list of words in the speech that may be incomprehensible to people without higher education or that are not
+    commonly used in everyday conversations, potentially making understanding more difficult. If such words do not
     occur in the text, leave an empty list.
   complicated_sentences: |
-    A list of sentences in the speech whose meaning may not be obvious, which are poorly constructed, lack information, 
-    or are very long and lose sense over time, potentially making understanding more difficult. If there are no such 
+    A list of sentences in the speech whose meaning may not be obvious, which are poorly constructed, lack information,
+    or are very long and lose sense over time, potentially making understanding more difficult. If there are no such
     sentences, leave an empty list.
 
 system_prompts:
   extract_text_properties: |
-    You are an expert in analyzing spoken Polish text. Based on the received text, you will identify and list the 
-    following properties: word repetitions, a list of main topics, numbers, jargon, sentences in the passive voice, 
-    complicated words, and complicated sentences. Each property should be identified according to its definition. 
-    When identifying topics, focus on the main, general threads, avoiding breaking down into detailed issues. If there 
+    You are an expert in analyzing spoken Polish text. Based on the received text, you will identify and list the
+    following properties: word repetitions, a list of main topics, numbers, jargon, sentences in the passive voice,
+    complicated words, and complicated sentences. Each property should be identified according to its definition.
+    When identifying topics, focus on the main, general threads, avoiding breaking down into detailed issues. If there
     are no appropriate words or structures in the text, do not invent them—simply provide an empty list.

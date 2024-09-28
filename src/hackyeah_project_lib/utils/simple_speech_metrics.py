@@ -1,16 +1,16 @@
 import nltk
 from nltk.tokenize import RegexpTokenizer
 
-nltk.download('punkt')
-nltk.download('punkt_tab')
-nltk.download('cmudict')
+nltk.download("punkt")
+nltk.download("punkt_tab")
+nltk.download("cmudict")
 
 
 class Text:
     def __init__(self, text: str):
         self.raw_text = text
-        self.sentences = nltk.sent_tokenize(self.raw_text, language='polish')
-        self._tokenizer = RegexpTokenizer(r'\w+')  # tokenizer that excludes punctuation
+        self.sentences = nltk.sent_tokenize(self.raw_text, language="polish")
+        self._tokenizer = RegexpTokenizer(r"\w+")  # tokenizer that excludes punctuation
         self.words = self._tokenizer.tokenize(self.raw_text)
         # self.words = nltk.word_tokenize(self.raw_text, language='polish')
 
@@ -36,12 +36,12 @@ class Text:
         # calculate Gunning Fog index
         return 0.4 * (len(self.words) / len(self.sentences) + 100 * (len(complex_words) / len(self.words)))
 
-    def get_lix_metric(self):
+    def get_lix_metric(self) -> float:
         COMPLEX_WORD_CHAR_NUM = 7
         complex_words = [word for word in self.words if self._count_syllables(word) >= COMPLEX_WORD_CHAR_NUM]
 
         # calculate Lesbarhets index
-        return (len(self.words) / len(self.sentences) + 100 * (len(complex_words) / len(self.words)))
+        return len(self.words) / len(self.sentences) + 100 * (len(complex_words) / len(self.words))
 
     def get_flesh_metric(self) -> float:
         """
@@ -61,13 +61,15 @@ class Text:
         # flesch calculation
         return 206.835 - (1.015 * len(self.words) / len(self.sentences)) - (84.6 * syllable_count / len(self.words))
 
-    def get_kincaid_grade(self):
+    def get_kincaid_grade(self) -> float:
         syllable_count = sum(self._count_syllables(word) for word in self.words)
 
         # kincaid calculation
         return (0.39 * len(self.words) / len(self.sentences)) + (11.8 * syllable_count / len(self.words)) - 15.59
 
-    # def get_final_metric(self, gun_w: float = 0.4, lix_w: float = 0.4, fle_w: float = 0.1, kin_w: float = 0.1) -> float:
+    # def get_final_metric(
+    # self, gun_w: float = 0.4, lix_w: float = 0.4, fle_w: float = 0.1, kin_w: float = 0.1
+    # ) -> float:
     #     if gun_w + lix_w + fle_w + kin_w != 1:
     #         raise ValueError('Incorrect weight coefficient')
     #
@@ -77,8 +79,8 @@ class Text:
     #     final_metric = (gunning_w * self.get_gunning_metric() + flesch_w * self.get_flesh_metric()) / 2
     #     return final_metric
 
-    def __str__(self):
-        return f'{self.get_gunning_metric()=} ; {self.get_flesh_metric()=} ; {self.get_kincaid_grade()=}'
+    def __str__(self) -> str:
+        return f"{self.get_gunning_metric()=} ; {self.get_flesh_metric()=} ; {self.get_kincaid_grade()=}"
 
 
 # text1 = Text(
