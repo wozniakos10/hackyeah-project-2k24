@@ -29,4 +29,4 @@ COPY . /app
 
 EXPOSE 8501
 
-ENTRYPOINT ["poetry", "run", "streamlit", "run", "src/hackyeah_project_lib/web/ui.py", "--server.port=8501", "--server.address=0.0.0.0"]
+ENTRYPOINT ["poetry", "run", "streamlit", "run", "src/hackyeah_project_lib/web/1_Main_page.py", "--server.port=8501", "--server.address=0.0.0.0"]

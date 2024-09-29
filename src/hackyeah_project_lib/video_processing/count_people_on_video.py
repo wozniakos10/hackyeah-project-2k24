@@ -91,26 +91,20 @@ def num_people(
         if person1_start is None and person1_stop is None:
             return PeopleCountModel(
                 number_of_persons=0,
-                description="No people detected",
+                description="Nie znaleziono osób na nagraniu.",
                 multiple_persons_in=None,
                 multiple_persons_out=None,
             )
     if person2_start is None and person2_stop is None:
         return PeopleCountModel(
             number_of_persons=1,
-            description="A single person was detected on video",
+            description="Zidentyfikowano jedną osobę na nagraniu.",
             multiple_persons_in=None,
             multiple_persons_out=None,
         )
     return PeopleCountModel(
         number_of_persons=2,
-        description=f"2 people from {person2_start} [s] to {person2_stop} [s]",
+        description=f"Na nagraniu zidentyfikowano dwie osoby pomiędzy {person2_start} [s] a {person2_stop} [s].",
         multiple_persons_in=person2_start,
         multiple_persons_out=person2_stop,
     )
-
-
-# Jak wolamy:
-# Zwraca Tuple ('Opis liczby osob', liczba_osob)
-# video_path = '/Users/dtomal/Documents/hackyeah-project-2k24/data_mp4/HY_2024_film_10.mp4'
-# print(num_people(*analyze_video(video_path)))

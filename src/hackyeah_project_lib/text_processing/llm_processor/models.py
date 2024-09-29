@@ -8,7 +8,7 @@ class TextPropertiesDetectedByLLM(BaseModel):
     list_of_topics: list[str] = Field(
         description=Prompts.text_properties_descriptions.list_of_topics, default_factory=list
     )
-    numbers: list[int] = Field(description=Prompts.text_properties_descriptions.numbers, default_factory=list)
+    numbers: list[str] = Field(description=Prompts.text_properties_descriptions.numbers, default_factory=list)
     jargon: list[str] = Field(description=Prompts.text_properties_descriptions.jargon, default_factory=list)
     passive_voice: list[str] = Field(
         description=Prompts.text_properties_descriptions.passive_voice, default_factory=list
@@ -26,6 +26,9 @@ class RefinedTextProperties(TextPropertiesDetectedByLLM):
     low_likelihood_repetitions: list[str]
     topic_changed_during_conversation: bool
     filtered_passive_voice: list[str]
+    annotated_text_jcn: list[str | tuple[str, str]]
+    annotated_text_repetitions: list[str | tuple[str, str]]
+    annotated_text_passive_voice: list[str | tuple[str, str]]
 
 
 class TextQuestionByLLm(BaseModel):

@@ -7,8 +7,11 @@ from pydantic import BaseModel
 
 from hackyeah_project_lib.audio_processing.audio_converter import AudioConverter
 from hackyeah_project_lib.audio_processing.audio_features import AudioVolumeModel, AudioVolumeProcessor, PauseDetection
-from hackyeah_project_lib.audio_processing.transcription import transcribe_audio
-from hackyeah_project_lib.audio_processing.transcription_srt import transcribe_audio_srt
+from hackyeah_project_lib.audio_processing.transcription_srt import (
+    TranscriptionVTTModel,
+    srt_to_webvtt_format,
+    transcribe_audio_srt,
+)
 from hackyeah_project_lib.audio_processing.xgboost_pause_detection import XGBoostClassifier, XGBoostPauseClassifierModel
 from hackyeah_project_lib.text_processing.llm_processor.models import RefinedTextProperties, TextQuestionByLLm
 from hackyeah_project_lib.text_processing.llm_processor.processor import LLMProcessor
@@ -31,8 +34,9 @@ class PipelineResponseModel(BaseModel):
     people_count: PeopleCountModel
     audio_volume: AudioVolumeModel
     audio_pauses: XGBoostPauseClassifierModel
-    transcription_srt: str
     transcription: str
+    transcription_srt: str
+    transcription_vtt: TranscriptionVTTModel
     key_words_phrases: str
     questions_generated: TextQuestionByLLm
     llm_analysis: RefinedTextProperties
@@ -124,13 +128,14 @@ class MainPipeline:
         xgboost_classifier = XGBoostClassifier()
         audio_pauses = xgboost_classifier.format_output(xgboost_classifier.predict(pause_interval_info))
 
-        # Step 7: Speech to text transcription (SRT)
+        # Step 7: Speech to text transcription
         self.describe_step(desc="Transkrypcja mowy na tekst (SRT)...")
         transcription_srt = transcribe_audio_srt(mp3_path, input_video_path.as_posix())
 
-        # Step 8: Speech to text transcription (normal)
+        # Step 8: SRT to text convertion
         self.describe_step(desc="Transkrypcja mowy na tekst (normal)...")
-        transcription = transcribe_audio(mp3_path)
+        vtt = srt_to_webvtt_format(transcription_srt)
+        transcription = " ".join([caption.text for caption in vtt.captions])
 
         # Step 9: Transcription summarization
         self.describe_step(desc="Podsumowanie tekstu po transkrypcji...")
@@ -150,12 +155,12 @@ class MainPipeline:
         self.describe_step(desc="Obliczenie metryk zrozumiałości tekstu...")
         simple_speech_metrics = SimpleSpeechMetricsProcessor(transcription).get_all_metrics()
 
-        # Step 11: Video processing
+        # Step 13: Video processing
         try:
-            self.describe_step(desc="Przetwarzanie wideo...")
+            self.describe_step(desc="Analiza zachowania osoby na wideo...")
             video_processing = send_message_to_gemini(file_url=s3_file_url)
         # Problem with gemini
-        except Exception as e:
+        except Exception:
             video_processing = VideoProcessingResponse(
                 speech_tone=" ",
                 face_mimic=" ",
@@ -177,8 +182,9 @@ class MainPipeline:
             people_count=people_count,
             audio_volume=audio_volume,
             audio_pauses=audio_pauses,
-            transcription_srt=transcription_srt,
             transcription=transcription,
+            transcription_srt=transcription_srt,
+            transcription_vtt=vtt,
             key_words_phrases=key_words_phrases,
             questions_generated=questions_generated,
             llm_analysis=llm_analysis_result,
