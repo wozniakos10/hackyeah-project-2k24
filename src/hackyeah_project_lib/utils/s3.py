@@ -72,3 +72,26 @@ class S3:
             logger.error(e)
             return False
         return True
+
+    def get_file_url(self, object_name: str, bucket: str | None = None, expiration: int = 3600) -> str | None:
+        """Generate a presigned URL to share an S3 object
+
+        :param object_name: S3 object name
+        :param bucket: Bucket name
+        :param expiration: Time in seconds for the presigned URL to remain valid
+        :return: Presigned URL as string. If error, returns None.
+        """
+        if bucket is None:
+            bucket = settings.S3_BUCKET_NAME
+
+        try:
+            response = self.s3_client.generate_presigned_url(
+                'get_object',
+                Params={'Bucket': bucket, 'Key': object_name},
+                ExpiresIn=expiration
+            )
+        except ClientError as e:
+            logger.error(e)
+            return None
+
+        return response

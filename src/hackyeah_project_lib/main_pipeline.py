@@ -18,7 +18,8 @@ from hackyeah_project_lib.video_processing.count_people_on_video import PeopleCo
 from hackyeah_project_lib.video_processing.reduce_mp4_size import compress_video
 from hackyeah_project_lib.video_processing.video_to_audio import VideoConverter
 from hackyeah_project_lib.web.ui import s3_class
-
+from hackyeah_project_lib.video_processing.models import VideoProcessingResponse
+from hackyeah_project_lib.video_processing.gcp import send_message_to_gemini
 
 class PipelineResponseModel(BaseModel):
     s3_bucket_path: str
@@ -32,6 +33,7 @@ class PipelineResponseModel(BaseModel):
     transcription: str
     llm_analysis: RefinedTextProperties
     simple_speech_metrics: SpeechMetricsModel
+    video_processing: VideoProcessingResponse
 
 
 class MainPipelineException(Exception):
@@ -50,6 +52,8 @@ class MainPipeline:
         7: 55,
         8: 65,
         9: 75,
+        10: 80,
+        11: 100,
     }
     step_counter: int = 0
 
@@ -95,6 +99,7 @@ class MainPipeline:
         s3_object_name = f"app/{self.unique_id}/{input_video_path.name}"
         if not s3_class.upload_file(file_name=input_video_path, object_name=s3_object_name):
             raise MainPipelineException("Error while uploading file to S3.")
+        s3_file_url = s3_class.get_file_url(object_name=s3_object_name)
 
         # Step 4: Count number of people
         self.describe_step(desc="Zliczanie ludzie na wideo...")
@@ -128,6 +133,11 @@ class MainPipeline:
         self.describe_step(desc="Obliczenie metryk zrozumiałości tekstu...")
         simple_speech_metrics = SimpleSpeechMetricsProcessor(transcription).get_all_metrics()
 
+        # Step 11: Video processing
+        self.describe_step(desc="Przetwarzanie wideo...")
+        video_processing = send_message_to_gemini(file_url=s3_file_url)
+
+
         return PipelineResponseModel(
             s3_bucket_path=s3_object_name,
             mp4_path=input_video_path.as_posix(),
@@ -140,4 +150,5 @@ class MainPipeline:
             transcription=transcription,
             llm_analysis=llm_analysis_result,
             simple_speech_metrics=simple_speech_metrics,
+            video_processing=video_processing,
         )
