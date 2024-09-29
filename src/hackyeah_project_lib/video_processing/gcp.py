@@ -1,12 +1,13 @@
-from typing import cast
-
 import json
+
 import vertexai
 from google.oauth2 import service_account
-from vertexai.generative_models import GenerativeModel, Part, SafetySetting, GenerationConfig
+from vertexai.generative_models import GenerationConfig, GenerativeModel, Part, SafetySetting
+
+from hackyeah_project_lib.video_processing.models import VideoProcessingResponse
 from hackyeah_project_lib.video_processing.prompts import gemini_prompt
 from hackyeah_project_lib.video_processing.schemas import video_processing_response_schema
-from hackyeah_project_lib.video_processing.models import VideoProcessingResponse
+
 AUTH_JSON = {
     "type": "service_account",
     "project_id": "rich-ceiling-437018-b5",
@@ -69,7 +70,7 @@ def send_message_to_gemini(file_url: str, system_message: str = gemini_prompt) -
         temperature=0.6,
         top_p=0.95,
         response_mime_type="application/json",
-        response_schema=video_processing_response_schema
+        response_schema=video_processing_response_schema,
     )
     storage_cred = service_account.Credentials.from_service_account_info(info)
     vertexai.init(project="rich-ceiling-437018-b5", credentials=storage_cred)
@@ -90,5 +91,5 @@ def send_message_to_gemini(file_url: str, system_message: str = gemini_prompt) -
         stream=False,
     )
 
-    #convert response.text (str) to json then to VideoProcessingResponse
+    # convert response.text (str) to json then to VideoProcessingResponse
     return VideoProcessingResponse(**json.loads(response.text))

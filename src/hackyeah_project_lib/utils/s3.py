@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any
+from typing import Any, cast
 
 import boto3
 from botocore.exceptions import ClientError
@@ -86,12 +86,10 @@ class S3:
 
         try:
             response = self.s3_client.generate_presigned_url(
-                'get_object',
-                Params={'Bucket': bucket, 'Key': object_name},
-                ExpiresIn=expiration
+                "get_object", Params={"Bucket": bucket, "Key": object_name}, ExpiresIn=expiration
             )
         except ClientError as e:
             logger.error(e)
             return None
 
-        return response
+        return cast(str, response)

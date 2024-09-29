@@ -2,11 +2,13 @@ from pydantic import BaseModel
 
 
 class VideoProcessingResponse(BaseModel):
-    ton_wypowiedzi: str
-    mimika: str
-    gestykulacja: str
-    emocje: str
+    speech_tone: str
+    face_mimic: str
+    gesticulation: str
+    emotions: str
     hate_speech: str
-    jakość_nagrania: str
-    nieprawidłowości: str
-    szum: str
+    speech_quality: str
+    discrepancies: str
+    noises: str
+    speech_pace: str
+    own_suggestions: str
