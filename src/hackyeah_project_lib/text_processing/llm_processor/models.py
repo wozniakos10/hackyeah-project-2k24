@@ -29,3 +29,16 @@ class RefinedTextProperties(TextPropertiesDetectedByLLM):
     annotated_text_jcn: list[str | tuple[str, str]]
     annotated_text_repetitions: list[str | tuple[str, str]]
     annotated_text_passive_voice: list[str | tuple[str, str]]
+
+
+class TextQuestionByLLm(BaseModel):
+    question_1: str = Field(description="Gene", default_factory=str)
+    question_2: str = Field(description=Prompts.question_generates_prompt.question_prompt, default_factory=str)
+    question_3: str = Field(description=Prompts.question_generates_prompt.question_prompt, default_factory=str)
+    question_4: str = Field(description=Prompts.question_generates_prompt.question_prompt, default_factory=str)
+    question_5: str = Field(description=Prompts.question_generates_prompt.question_prompt, default_factory=str)
+    question_6: str = Field(description=Prompts.question_generates_prompt.question_prompt, default_factory=str)
+    question_7: str = Field(description=Prompts.question_generates_prompt.question_prompt, default_factory=str)
+    question_8: str = Field(description=Prompts.question_generates_prompt.question_prompt, default_factory=str)
+    question_9: str = Field(description=Prompts.question_generates_prompt.question_prompt, default_factory=str)
+    question_10: str = Field(description=Prompts.question_generates_prompt.question_prompt, default_factory=str)

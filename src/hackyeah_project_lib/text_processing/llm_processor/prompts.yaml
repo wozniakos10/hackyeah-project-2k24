@@ -34,11 +34,32 @@ text_properties_descriptions:
     A list of sentences in the speech whose meaning may not be obvious, which are poorly constructed, lack information,
     or are very long and lose sense over time, potentially making understanding more difficult. If there are no such
     sentences, leave an empty list.
+  english_translation: |
+    A list of sentences translated to English. Translation should keep language style (formal or informal)
 
 system_prompts:
   extract_text_properties: |
-    You are an expert in analyzing spoken Polish text. Based on the received text, you will identify and list the
-    following properties: word repetitions, a list of main topics, numbers, jargon, sentences in the passive voice,
-    complicated words, and complicated sentences. Each property should be identified according to its definition.
-    When identifying topics, focus on the main, general threads, avoiding breaking down into detailed issues. If there
-    are no appropriate words or structures in the text, do not invent them—simply provide an empty list.
+    You are an expert in analyzing spoken Polish text. Based on the received text, you will identify, translate to
+    English and list the following properties: word repetitions, a list of main topics, numbers, jargon, sentences
+    in the passive voice, complicated words, and complicated sentences. Each property should be identified according
+    to its definition. When identifying topics, focus on the main, general threads, avoiding breaking down into
+    detailed issues. If there are no appropriate words or structures in the text, do not invent them—simply
+    provide an empty list.
+
+  words_extraction_prompt: |
+    You are an expert in analyzing spoken Polish text.
+    Please extract the most relevant keywords from the following text, highlighting key concepts, topics,
+    or themes discussed. Focus on identifying important terms while avoiding unnecessary details. You must
+    provide it in Polish language, you cannot use english! Display everything in polish!
+
+  question_prompt: |
+    You are an expert in analyzing spoken Polish text.
+    Based on the following text, generate an insightful and thought-provoking question
+    that encourages deeper reflection or analysis of the content. Focus on creating a
+    question that highlights the core themes or ideas discussed. You must
+    provide it in Polish language. Each question should be unique
+
+
+question_generates_prompt:
+  question_prompt: |
+    Generate question in polish language.

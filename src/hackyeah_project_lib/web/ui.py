@@ -2,6 +2,7 @@ import logging
 import os
 import uuid
 from pathlib import Path
+from random import randint
 
 import streamlit as st
 from annotated_text import annotated_text
@@ -36,7 +37,9 @@ with left_col:
         st.chat_message(msg["role"]).write(msg["content"])
 
     if uploaded_file is None:
-        st.session_state.messages.append({"role": "assistant", "content": "Dodaj plik aby rozpocząć"})
+        st.session_state.messages.append(
+            {"role": "assistant", "content": "Dodaj plik aby rozpocząć. Przetwarzanie może potrwać do 2 minut."}
+        )
     else:
         if "pipeline_output" not in st.session_state:
             # Process the file
@@ -68,16 +71,17 @@ with left_col:
                 {"role": "assistant", "content": "Witaj! Zadaj pytanie dotyczące manipulacji w wideo."}
             ]
 
+        messages = st.container(height=500)
         for msg in st.session_state.chat_messages:
-            with st.chat_message(msg["role"]):
+            with messages.chat_message(msg["role"]):
                 st.markdown(msg["content"])
 
         if user_question := st.chat_input("Zadaj pytanie dotyczące manipulacji w wideo"):
             st.session_state.chat_messages.append({"role": "user", "content": user_question})
-            with st.chat_message("user"):
+            with messages.chat_message("user"):
                 st.markdown(user_question)
 
-            with st.chat_message("assistant"):
+            with messages.chat_message("assistant"):
                 with st.spinner("Generowanie odpowiedzi..."):
                     assistant_response = llm.ask_openai(user_question, pipeline_output.model_dump(mode="python"))
                     st.markdown(assistant_response)
@@ -118,7 +122,9 @@ with right_col:
                 arBot=-76,
                 arTop=12,
             )
-        st.caption("Sugerowany wiek odbiorcy oszacowano na podstawie średniej ważonej metryk Gunninga i Kincaida.")
+        st.caption(
+            "Sugerowany wiek odbiorcy oszacowano na podstawie średniej ważonej metryk Gunninga-Foga i Flescha-Kincaida."
+        )
 
         st.divider()
         col1, col2 = st.columns(2)
@@ -129,6 +135,7 @@ with right_col:
             )
             st.write(pipeline_output.audio_pauses.interpretation)
 
+            st.divider()
             st.metric(
                 label="Zmiana tematu",
                 value="Tak" if pipeline_output.llm_analysis.topic_changed_during_conversation else "Nie",
@@ -142,16 +149,16 @@ with right_col:
                 st.write(f"> :green[_{pipeline_output.llm_analysis.list_of_topics[0]}_]")
 
         with col2:
-            st.write(f"> :blue[_Mimika: {pipeline_output.video_processing.mimika}_]")
-            st.write(f"> :blue[_Ton wypowiedzi: {pipeline_output.video_processing.ton_wypowiedzi}_]")
-            st.write(f"> :blue[_Gestykulacja: {pipeline_output.video_processing.gestykulacja}_]")
-            st.write(f"> :blue[_Emocje: {pipeline_output.video_processing.gestykulacja}_]")
-            st.write(f"> :blue[_Mowa nienawiści: {pipeline_output.video_processing.gestykulacja}_]")
-            # st.write(f"> :blue[_Zdenerwowania: {pipeline_output.video_processing.zdenerwowania}_]")
+            st.write(f"> :blue[_Mimika: {pipeline_output.video_processing.face_mimic}_]")
+            st.write(f"> :blue[_Ton wypowiedzi: {pipeline_output.video_processing.speech_tone}_]")
+            st.write(f"> :blue[_Gestykulacja: {pipeline_output.video_processing.gesticulation}_]")
+            st.write(f"> :blue[_Emocje: {pipeline_output.video_processing.emotions}_]")
+            st.write(f"> :blue[_Mowa nienawiści: {pipeline_output.video_processing.hate_speech}_]")
+            st.write(f"> :blue[_Rozbieżności: {pipeline_output.video_processing.discrepancies}_]")
 
         st.divider()
-        tab_jcn, tab_rep, tab_passive = st.tabs(
-            ["Liczby, żargon i skomplikowane słowa", "Powtórzenia", "Liczba bierna"]
+        tab_jcn, tab_rep, tab_passive, tab_questions = st.tabs(
+            ["Liczby, żargon i skomplikowane słowa", "Powtórzenia", "Liczba bierna", "Pytania do wypowiedzi"]
         )
         with tab_jcn:
             annotated_text(*pipeline_output.llm_analysis.annotated_text_jcn)
@@ -159,3 +166,7 @@ with right_col:
             annotated_text(*pipeline_output.llm_analysis.annotated_text_repetitions)
         with tab_passive:
             annotated_text(*pipeline_output.llm_analysis.annotated_text_passive_voice)
+        with tab_questions:
+            for i in range(3):
+                question = getattr(pipeline_output.questions_generated, f"question_{randint(1, 10)}")
+                st.write(f"> _{question}_")
