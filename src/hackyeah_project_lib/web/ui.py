@@ -16,6 +16,11 @@ logger = get_configured_logger("app_logger", log_file="logs/app.log", level=logg
 st.set_page_config(layout="wide")
 left_col, right_col = st.columns(2)
 
+
+def reset_app() -> None:
+    st.session_state.clear()
+
+
 with left_col:
     st.title("💬 Chat Ekspert od Manipulacji w Wideo")
 
@@ -24,8 +29,7 @@ with left_col:
 
     # Single File Uploader for MP4 Files
     uploaded_file = st.file_uploader(
-        "Wgraj plik wideo (MP4, MPEG4)",
-        type=["mp4", "mpeg4"],
+        "Wgraj plik wideo (MP4, MPEG4)", type=["mp4", "mpeg4"], on_change=lambda: reset_app()
     )
 
     for msg in st.session_state.messages:
@@ -92,9 +96,8 @@ with right_col:
             st.metric(
                 label="Sugerowany wiek odbiorcy tekstu",
                 value=pipeline_output.simple_speech_metrics.suggested_text_recipient_age,
-                help="Wartość obliczona na podstawie średniej ważonej metryk Gunninga i Kincaida.",
             )
-            st.write(pipeline_output.simple_speech_metrics.suggested_text_recipient_interpretation)
+            st.write(f"{pipeline_output.simple_speech_metrics.suggested_text_recipient_interpretation}.")
         with col2:
             st.metric(
                 label="Liczba zidentyfikowanych osób",
@@ -115,6 +118,16 @@ with right_col:
                 arBot=-76,
                 arTop=12,
             )
+        st.caption("Sugerowany wiek odbiorcy oszacowano na podstawie średniej ważonej metryk Gunninga i Kincaida.")
 
         st.divider()
-        annotated_text(*pipeline_output.llm_analysis.annotated_text)
+        tab_jcn, tab_rep, tab_passive = st.tabs(
+            ["Liczby, żargon i skomplikowane słowa", "Powtórzenia", "Liczba bierna"]
+        )
+
+        with tab_jcn:
+            annotated_text(*pipeline_output.llm_analysis.annotated_text_jcn)
+        with tab_rep:
+            annotated_text(*pipeline_output.llm_analysis.annotated_text_repetitions)
+        with tab_passive:
+            annotated_text(*pipeline_output.llm_analysis.annotated_text_passive_voice)

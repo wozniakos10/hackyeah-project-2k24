@@ -26,4 +26,6 @@ class RefinedTextProperties(TextPropertiesDetectedByLLM):
     low_likelihood_repetitions: list[str]
     topic_changed_during_conversation: bool
     filtered_passive_voice: list[str]
-    annotated_text: list[str | tuple[str, str]]
+    annotated_text_jcn: list[str | tuple[str, str]]
+    annotated_text_repetitions: list[str | tuple[str, str]]
+    annotated_text_passive_voice: list[str | tuple[str, str]]
