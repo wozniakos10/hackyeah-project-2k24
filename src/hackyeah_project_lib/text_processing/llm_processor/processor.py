@@ -1,9 +1,13 @@
 from typing import Any, cast
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import ChatCompletion, OpenAI
 
-from hackyeah_project_lib.text_processing.llm_processor.models import RefinedTextProperties, TextPropertiesDetectedByLLM
+from hackyeah_project_lib.text_processing.llm_processor.models import (
+    RefinedTextProperties,
+    TextPropertiesDetectedByLLM,
+    TextQuestionByLLm,
+)
 from hackyeah_project_lib.text_processing.llm_processor.prompts import Prompts
 
 
@@ -48,6 +52,32 @@ class LLMProcessor:
                 if self._check_for_common_passive_voice_properties(phrase)
             ],
         )
+
+    def get_10_question(self, text: str) -> TextQuestionByLLm:
+        completion = self.openai_client.beta.chat.completions.parse(
+            model="gpt-4o-2024-08-06",
+            messages=[
+                {"role": "system", "content": Prompts.system_prompts.question_prompt},
+                {"role": "user", "content": text},
+            ],
+            response_format=TextQuestionByLLm,
+            temperature=0.2,
+            top_p=0.99,
+        )
+        questions = cast(TextQuestionByLLm, completion.choices[0].message.parsed)
+        return TextQuestionByLLm(**questions.model_dump(mode="python"))
+
+    def get_key_words(self, text: str) -> Any:
+        response = self.openai_client.chat.completions.create(
+            model="gpt-4o-2024-08-06",
+            messages=[
+                {"role": "system", "content": Prompts.system_prompts.extract_text_properties},
+                {"role": "user", "content": text},
+            ],
+            temperature=0.2,
+            top_p=0.99,
+        )
+        return response.choices[0].message.content
 
     # Funkcja wysyłająca pytanie do OpenAI
     def ask_openai(self, question: str, json_data: dict[str, Any]) -> str:
