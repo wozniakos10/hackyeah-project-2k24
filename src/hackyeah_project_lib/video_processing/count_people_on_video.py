@@ -1,7 +1,15 @@
 from typing import Any, Dict, Tuple
 
 import cv2
+from pydantic import BaseModel
 from ultralytics import YOLO
+
+
+class PeopleCountModel(BaseModel):
+    number_of_persons: int
+    description: str
+    multiple_persons_in: float | None
+    multiple_persons_out: float | None
 
 
 def count_people(results: Any) -> int:
@@ -37,7 +45,9 @@ def analyze_people_count(people_count_over_time: Any) -> Dict[str, Any]:
     }
 
 
-def analyze_video(video_path: str, model: Any = "yolov8n-pose.pt") -> Tuple[Any, Any, Any, Any]:
+def analyze_video(
+    video_path: str, model: Any = "yolov8n-pose.pt"
+) -> Tuple[float | None, float | None, float | None, float | None]:
     model = YOLO(model)
     cap = cv2.VideoCapture(video_path)
     frame_number = 0
@@ -74,13 +84,30 @@ def analyze_video(video_path: str, model: Any = "yolov8n-pose.pt") -> Tuple[Any,
     return person1_start, person2_start, person1_stop, person2_stop
 
 
-def num_people(person1_start: Any, person2_start: Any, person1_stop: Any, person2_stop: Any) -> str:
+def num_people(
+    person1_start: float | None, person2_start: float | None, person1_stop: float | None, person2_stop: float | None
+) -> PeopleCountModel:
     if person1_start is None and person1_stop is None:
         if person1_start is None and person1_stop is None:
-            return "No person on video", 0  # type: ignore
+            return PeopleCountModel(
+                number_of_persons=0,
+                description="No people detected",
+                multiple_persons_in=None,
+                multiple_persons_out=None,
+            )
     if person2_start is None and person2_stop is None:
-        return "1 Person on video", 1  # type: ignore
-    return f"2 people from {person2_start} [s] to {person2_stop} [s]", 2  # type: ignore
+        return PeopleCountModel(
+            number_of_persons=1,
+            description="A single person was detected on video",
+            multiple_persons_in=None,
+            multiple_persons_out=None,
+        )
+    return PeopleCountModel(
+        number_of_persons=2,
+        description=f"2 people from {person2_start} [s] to {person2_stop} [s]",
+        multiple_persons_in=person2_start,
+        multiple_persons_out=person2_stop,
+    )
 
 
 # Jak wolamy:

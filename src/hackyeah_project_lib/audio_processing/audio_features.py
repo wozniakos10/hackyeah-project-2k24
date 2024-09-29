@@ -3,6 +3,7 @@ from typing import Any
 
 import librosa
 import numpy as np
+from pydantic import BaseModel
 from pydub import AudioSegment
 from pydub.silence import detect_silence
 
@@ -10,11 +11,18 @@ warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 
-class AudioFeatures:
+class AudioVolumeModel(BaseModel):
+    volume_value: int
+    volume_interpretation: str
+
+
+class AudioVolumeProcessor:
     def __init__(self, path: str):
         self.path = path
-        self.volume = self.__get_mp4_volume(self.path)[0]
-        self.volume_interpretation = self.__get_mp4_volume(self.path)[1]
+
+    def run(self) -> AudioVolumeModel:
+        volume_value, volume_interpretation = self.__get_mp4_volume(self.path)
+        return AudioVolumeModel(volume_value=volume_value, volume_interpretation=volume_interpretation)
 
     @staticmethod
     def __get_mp4_volume(path: str) -> tuple[int, str]:

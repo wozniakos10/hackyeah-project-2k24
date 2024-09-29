@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import ffmpeg
 
@@ -8,7 +9,7 @@ REDUCE MP4 to 20 MB
 
 
 # inpt = '/Users/dtomal/Documents/hackyeah-project-2k24/data_mp4/HY_2024_film_09.mp4'
-def compress_video(video_full_path: str, output_file_name: str, target_size: int = 7 * 1000) -> None:
+def compress_video(video_full_path: str | Path, output_file_name: str, target_size: int = 7 * 1000) -> None:
     # Reference: https://en.wikipedia.org/wiki/Bit_rate#Encoding_bit_rate
     min_audio_bitrate = 32000
     max_audio_bitrate = 256000

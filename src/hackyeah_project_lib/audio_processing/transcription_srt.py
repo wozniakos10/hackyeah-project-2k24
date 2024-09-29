@@ -10,6 +10,7 @@ client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
 def transcribe_audio_srt(file_path: str) -> str:
     with open(file_path, "rb") as audio_file:
         transcript = client.audio.transcriptions.create(file=audio_file, model="whisper-1", response_format="srt")
+        print(type(transcript))
         return cast(str, transcript)
 
 
