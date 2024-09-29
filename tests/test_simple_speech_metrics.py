@@ -2,7 +2,7 @@ import pytest
 
 from hackyeah_project_lib.text_processing import speech_metrics
 
-easy_text = speech_metrics.SimpleSpeechIdentifier(
+easy_text = speech_metrics.SimpleSpeechMetricsProcessor(
     """
     Pies to zwierzę, które jest bardzo przyjacielskie. Pies lubi biegać, bawić się i skakać. Ma cztery nogi,
     ogon i uszy. Psy mogą być różnych kolorów: czarne, białe, brązowe i nawet w plamy!
@@ -17,7 +17,7 @@ easy_text = speech_metrics.SimpleSpeechIdentifier(
     .strip()
 )
 
-mid_text = speech_metrics.SimpleSpeechIdentifier(
+mid_text = speech_metrics.SimpleSpeechMetricsProcessor(
     """
     Już w roku 1952 amerykański biznesmen Robert Gunning sformułował algorytm sprawdzania trudności odbioru tekstu.
     Współczynnik mglistości (Fog Index) Roberta Gunninga jest najpopularniejszym do dziś wykorzystywanym narzędziem
@@ -34,7 +34,7 @@ mid_text = speech_metrics.SimpleSpeechIdentifier(
     .strip()
 )
 
-difficult_text = speech_metrics.SimpleSpeechIdentifier(
+difficult_text = speech_metrics.SimpleSpeechMetricsProcessor(
     """
     Sieć neuronowa - system przeznaczony do przetwarzania informacji, którego budowa i zasada działania są w pewnym
     stopniu wzorowane na funkcjonowaniu fragmentów rzeczywistego (biologicznego) systemu nerwowego. Na przesłankach
@@ -54,12 +54,12 @@ difficult_text = speech_metrics.SimpleSpeechIdentifier(
 
 
 @pytest.mark.parametrize("text, sentences_num", [(easy_text, 10), (mid_text, 9), (difficult_text, 5)])
-def test_count_sentences(text: speech_metrics.SimpleSpeechIdentifier, sentences_num: int) -> None:
+def test_count_sentences(text: speech_metrics.SimpleSpeechMetricsProcessor, sentences_num: int) -> None:
     assert len(text.sentences) == sentences_num
 
 
 @pytest.mark.parametrize("text, words_num", [(easy_text, 76), (mid_text, 119), (difficult_text, 98)])
-def test_count_words(text: speech_metrics.SimpleSpeechIdentifier, words_num: int) -> None:
+def test_count_words(text: speech_metrics.SimpleSpeechMetricsProcessor, words_num: int) -> None:
     assert len(text.words) == words_num
 
 
@@ -68,17 +68,17 @@ def test_count_words(text: speech_metrics.SimpleSpeechIdentifier, words_num: int
     [("przykładowy", 4), ("tekst", 1), ("złożonych", 3), ("współczynnika", 4), ("internetu", 4), ("rowie", 2)],
 )
 def test_count_syllables(word: str, correct_syllables_num: int) -> None:
-    assert speech_metrics.SimpleSpeechIdentifier._count_syllables(word=word) == correct_syllables_num
+    assert speech_metrics.SimpleSpeechMetricsProcessor._count_syllables(word=word) == correct_syllables_num
 
 
 @pytest.mark.parametrize("text, gun_metric", [(easy_text, 4.6), (mid_text, 10), (difficult_text, 17)])
-def test_get_gunning_metric(text: speech_metrics.SimpleSpeechIdentifier, gun_metric: float) -> None:
+def test_get_gunning_metric(text: speech_metrics.SimpleSpeechMetricsProcessor, gun_metric: float) -> None:
     min, max = gun_metric * 0.8, gun_metric * 1.2
     assert min < text.get_gunning_metric() < max
 
 
 @pytest.mark.parametrize("text, flesch_metric", [(easy_text, 7), (mid_text, 15), (difficult_text, 20)])
-def test_get_flesh_kincaid_metric(text: speech_metrics.SimpleSpeechIdentifier, flesch_metric: float) -> None:
+def test_get_flesh_kincaid_metric(text: speech_metrics.SimpleSpeechMetricsProcessor, flesch_metric: float) -> None:
     min, max = flesch_metric * 0.8, flesch_metric * 1.2
     assert min < text.get_flesh_kincaid_metric() < max
 
@@ -86,5 +86,7 @@ def test_get_flesh_kincaid_metric(text: speech_metrics.SimpleSpeechIdentifier, f
 @pytest.mark.parametrize(
     "text, final_min_age, final_max_age", [(easy_text, 0, 11), (mid_text, 17, 21), (difficult_text, 21, 100)]
 )
-def test_get_final_score(text: speech_metrics.SimpleSpeechIdentifier, final_min_age: int, final_max_age: int) -> None:
-    assert final_min_age < text._get_final_score() < final_max_age
+def test_get_final_score(
+    text: speech_metrics.SimpleSpeechMetricsProcessor, final_min_age: int, final_max_age: int
+) -> None:
+    assert final_min_age < text.get_final_score() < final_max_age

@@ -5,15 +5,16 @@ from typing import Any
 
 import streamlit as st
 
-from hackyeah_project_lib.audio_processing.audio_converter import AudioConverter, VideoConverter
-from hackyeah_project_lib.audio_processing.audio_features import AudioFeatures, PauseDetection
+from hackyeah_project_lib.audio_processing.audio_converter import AudioConverter
+from hackyeah_project_lib.audio_processing.audio_features import AudioVolumeProcessor, PauseDetection
 from hackyeah_project_lib.audio_processing.transcription import transcribe_audio
 from hackyeah_project_lib.audio_processing.transcription_srt import transcribe_audio_srt
-from hackyeah_project_lib.audio_processing.xgboost_pause_detection.xgboost_class import XGBoostClass
+from hackyeah_project_lib.audio_processing.xgboost_pause_detection.xgboost_class import XGBoostClassifier
 from hackyeah_project_lib.config import settings
 from hackyeah_project_lib.utils.logger import get_configured_logger
 from hackyeah_project_lib.utils.s3 import S3
 from hackyeah_project_lib.video_processing.reduce_mp4_size import compress_video
+from hackyeah_project_lib.video_processing.video_to_audio import VideoConverter
 
 logger = get_configured_logger("app_logger", log_file="logs/app.log", level=logging.DEBUG)
 
@@ -21,7 +22,7 @@ logger = get_configured_logger("app_logger", log_file="logs/app.log", level=logg
 def pause_extractor(file_path: str) -> dict[str, list[Any]]:
     wav_file_name = os.path.join("temp", f"{filename}_{unique_id}.wav")
     audio_conv = AudioConverter(path=file_path)
-    audio_conv.mp3towav(path_to_wav=wav_file_name)
+    audio_conv.mp3_to_wav(path_to_wav=wav_file_name)
     pause = PauseDetection(path=wav_file_name)
     st.write("Pause detection:")
     pause_interval = pause.pause_interval()
@@ -47,7 +48,6 @@ if "messages" not in st.session_state:
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
-# File Uploader for MP3 Files
 uploaded_file = st.file_uploader("Upload file", type="mp4")
 
 if uploaded_file is not None:
@@ -60,7 +60,7 @@ if uploaded_file is not None:
     unique_filename = f"{filename}_{unique_id}{file_extension}"
 
     # Save the uploaded file with the unique filename
-    file_path = os.path.join("temp", unique_filename)
+    file_path = os.path.join("/tmp", unique_filename)
     with open(file_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
@@ -78,7 +78,7 @@ if uploaded_file is not None:
     status_text.text("Konwersja wideo na MP3...")
     mp3_path = f"{filename}_{unique_id}.mp3"
     video_converter = VideoConverter(path=compressed_video_path)
-    video_converter.mp4tomp3(path_to_mp3=mp3_path)
+    video_converter.mp4_to_mp3(path_to_mp3=mp3_path)
     progress_bar.progress(40)  # Update progress
 
     # Step 3: Upload file to S3
@@ -98,10 +98,7 @@ if uploaded_file is not None:
         pause_interval = pause_extractor(mp3_path)
         progress_bar.progress(70)  # Update progress
 
-        model = XGBoostClass(
-            model_path="src/hackyeah_project_lib/audio_processing/xgboost_pause_detection/xgboost_model.pkl",
-            scaler_path="src/hackyeah_project_lib/audio_processing/xgboost_pause_detection/scaler.pkl",
-        )
+        model = XGBoostClassifier()
         score = model.predict(pause_interval)
         pause_model_output_parser(score)
 
@@ -109,8 +106,7 @@ if uploaded_file is not None:
     with col2:
         st.write("### Analiza głośności audio:")
         status_text.text("Analiza głośności audio...")
-        audio_feat = AudioFeatures(path=file_path)
-        interpretation = audio_feat.volume_interpretation
+        interpretation = AudioVolumeProcessor(path=file_path).run().volume_interpretation
         st.metric(label="Głośność wideo", value=f"{interpretation}")
         progress_bar.progress(80)  # Update progress
 

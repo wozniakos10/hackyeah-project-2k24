@@ -22,10 +22,16 @@ class VideoConverter:
         duration_seconds = video.duration  # Długość nagrania w sekundach
         return cast(float, duration_seconds)
 
-    def mp4tomp3(self, path_to_mp3: str) -> None:
+    def mp4_to_mp3(self, path_to_mp3: str) -> None:
         # Konwersja MP4 do MP3
         video = VideoFileClip(self.mp4_path)
         video.audio.write_audiofile(path_to_mp3)
+
+    def mp4_to_wav(self, path_to_wav: str) -> None:
+        """Konwersja MP4 do WAV"""
+        video = VideoFileClip(self.mp4_path)
+        video.audio.write_audiofile(path_to_wav, codec="pcm_s16le")
+        print(f"Konwersja MP4 do WAV zakończona: {path_to_wav}")
 
 
 # Usage:

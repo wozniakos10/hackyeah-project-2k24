@@ -41,7 +41,6 @@ class S3:
                 object_name = os.path.basename(file_name)
             else:
                 object_name = file_name.name
-
         try:
             if isinstance(file_name, str):
                 self.s3_client.upload_file(file_name, bucket, object_name)

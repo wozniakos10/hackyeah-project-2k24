@@ -1,13 +1,25 @@
 import nltk
 import pandas as pd
 from nltk.tokenize import RegexpTokenizer
+from pydantic import BaseModel
 
 nltk.download("punkt")
 nltk.download("punkt_tab")
 nltk.download("cmudict")
 
 
-class SimpleSpeechIdentifier:
+class SpeechMetricsModel(BaseModel):
+    words_count: int
+    sentences_count: int
+    average_words_per_sentence: float
+    average_syllables_per_word: float
+    suggested_text_recipient_age: int
+    suggested_text_recipient_interpretation: str
+    gunning_score: float
+    kincaid_score: float
+
+
+class SimpleSpeechMetricsProcessor:
     def __init__(self, text: str):
         self.raw_text = text
         self.sentences = nltk.sent_tokenize(self.raw_text, language="polish")
@@ -50,13 +62,17 @@ class SimpleSpeechIdentifier:
         # calculate Gunning Fog index
         return 0.4 * (len(self.words) / len(self.sentences) + 100 * (len(complex_words) / len(self.words)))
 
+    @property
+    def syllable_in_sentence(self) -> int:
+        return sum(self._count_syllables(word) for word in self.words)
+
     def get_flesh_kincaid_metric(self) -> float:
-        syllable_count = sum(self._count_syllables(word) for word in self.words)
+        syllable_count = self.syllable_in_sentence
 
         # flesch calculation
         return (0.39 * len(self.words) / len(self.sentences)) + (11.8 * syllable_count / len(self.words)) - 15.59
 
-    def _get_final_score(self, gun_w: float = 0.7, fk_w: float = 0.3) -> float:
+    def get_final_score(self, gun_w: float = 0.7, fk_w: float = 0.3) -> float:
         if gun_w + fk_w != 1:
             raise ValueError("Incorrect weight coefficient")
 
@@ -69,7 +85,7 @@ class SimpleSpeechIdentifier:
         return final_metric
 
     def output_msg(self) -> str:
-        final_score = self._get_final_score()
+        final_score = self.get_final_score()
         print(f"{final_score=}")
 
         # find correct row from table
@@ -79,10 +95,24 @@ class SimpleSpeechIdentifier:
 
         return str(row["notes"])
 
+    def get_all_metrics(self) -> SpeechMetricsModel:
+        words_count = len(self.words)
+        sentences_count = len(self.sentences)
+        return SpeechMetricsModel(
+            words_count=words_count,
+            sentences_count=sentences_count,
+            average_words_per_sentence=words_count / sentences_count,
+            average_syllables_per_word=self.syllable_in_sentence / words_count,
+            suggested_text_recipient_age=int(self.get_final_score()),
+            suggested_text_recipient_interpretation=self.output_msg(),
+            gunning_score=self.get_gunning_metric(),
+            kincaid_score=self.get_flesh_kincaid_metric(),
+        )
+
     def __repr__(self) -> str:
         return (
             f"{self.get_gunning_metric()=} ; {self.get_flesh_kincaid_metric()=} ; "
-            f"{self._get_final_score()=} ; {self.output_msg()=}"
+            f"{self.get_final_score()=} ; {self.output_msg()=}"
         )
 
     def __str__(self) -> str:
