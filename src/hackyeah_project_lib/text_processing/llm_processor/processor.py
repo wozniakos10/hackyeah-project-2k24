@@ -1,7 +1,7 @@
 from typing import Any, cast
 
 from dotenv import load_dotenv
-from openai import ChatCompletion, OpenAI
+from openai import OpenAI
 
 from hackyeah_project_lib.text_processing.llm_processor.models import RefinedTextProperties, TextPropertiesDetectedByLLM
 from hackyeah_project_lib.text_processing.llm_processor.prompts import Prompts
@@ -50,22 +50,26 @@ class LLMProcessor:
         )
 
     # Funkcja wysyłająca pytanie do OpenAI
-    def ask_openai(self, question: str, json_data: dict[str, Any]):
+    def ask_openai(self, question: str, json_data: dict[str, Any]) -> str:
         # Połącz pytanie użytkownika z danymi o manipulacjach
-        content = f"Użytkownik zapytał: '{question}'. Oto dane dotyczące manipulacji w wideo:\n{json_data}\nOpisz manipulacje wideo na podstawie tego pytania."
+        content = (
+            f"Użytkownik zapytał: '{question}'. Oto dane dotyczące manipulacji w wideo:\n{json_data}\n"
+            f"Opisz manipulacje wideo na podstawie tego pytania."
+        )
 
         response = self.openai_client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {
                     "role": "system",
-                    "content": "Jesteś ekspertem od analizy manipulacji w wideo. Korzystając z dostarczonych informacji JSON"
-                    "odpowiedz użytkownikowi na zadane pytanie dotyczące manipulacji w udostępionym przez niego video. Możesz korzystać tylko z dostarczonych"
-                    "przez nas danych. Nie możesz odpowiedzieć na pytanie nie dotyczące manipulacji video! Jeśli użytkownik zada pytanie nie"
-                    "związane z tematem, powiedz mu ze nie mozesz odpowiedziec na to pytanie.",
+                    "content": "Jesteś ekspertem od analizy manipulacji w wideo. Korzystając z dostarczonych "
+                    "informacji JSON odpowiedz użytkownikowi na zadane pytanie dotyczące manipulacji w "
+                    "udostępionym przez niego video. Możesz korzystać tylko z dostarczonych przez nas danych. "
+                    "Nie możesz odpowiedzieć na pytanie nie dotyczące manipulacji video! Jeśli użytkownik zada "
+                    "pytanie nie związane z tematem, powiedz mu ze nie mozesz odpowiedziec na to pytanie.",
                 },
                 {"role": "user", "content": content},
             ],
         )
 
-        return response.choices[0].message.content
+        return cast(str, response.choices[0].message.content)

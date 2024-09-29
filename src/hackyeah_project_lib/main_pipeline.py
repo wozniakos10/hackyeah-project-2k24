@@ -102,7 +102,7 @@ class MainPipeline:
         s3_object_name = f"app/{self.unique_id}/{input_video_path.name}"
         if not self.s3_class.upload_file(file_name=input_video_path.as_posix(), object_name=s3_object_name):
             raise MainPipelineException("Error while uploading file to S3.")
-        s3_file_url = self.s3_class.get_file_url(object_name=s3_object_name)
+        s3_file_url = self.s3_class.get_file_url(object_name=s3_object_name) or str()
 
         # Step 4: Count number of people
         self.describe_step(desc="Zliczanie ludzie na wideo...")
