@@ -18,12 +18,12 @@ llm = LLMProcessor()
 st.set_page_config(layout="wide")
 st.title("💬 Chat Ekspert od Manipulacji w Wideo")
 
-if "messages" not in st.session_state:
-    st.session_state["messages"] = [
+if "chat_messages_2" not in st.session_state:
+    st.session_state["chat_messages_2"] = [
         {"role": "assistant", "content": "Dodaj plik aby rozpocząć. Przetwarzanie może potrwać do 3 minut."}
     ]
 
-for msg in st.session_state.messages:
+for msg in st.session_state.chat_messages_2:
     st.chat_message(msg["role"]).write(msg["content"])
 
 
@@ -71,17 +71,17 @@ if uploaded_file_1 is not None and uploaded_file_2 is not None:
     # st.chat_message("assistant").write("Wynik porównania: " + comparison_result)
 
     # Chat interface
-    if "chat_messages" not in st.session_state:
-        st.session_state.chat_messages = [
+    if "chat_messages_2" not in st.session_state:
+        st.session_state.chat_messages_2 = [
             {"role": "assistant", "content": "Witaj! Zadaj pytanie dotyczące porównania wideo."}
         ]
 
-    for msg in st.session_state.chat_messages:
+    for msg in st.session_state.chat_messages_2:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
     if user_question := st.chat_input("Zadaj pytanie dotyczące porównania wideo"):
-        st.session_state.chat_messages.append({"role": "user", "content": user_question})
+        st.session_state.chat_messages_2.append({"role": "user", "content": user_question})
         with st.chat_message("user"):
             st.markdown(user_question)
 
@@ -93,4 +93,4 @@ if uploaded_file_1 is not None and uploaded_file_2 is not None:
                     pipeline_outputs[1].model_dump(mode="python"),
                 )
                 st.markdown(assistant_response)
-                st.session_state.chat_messages.append({"role": "assistant", "content": assistant_response})
+                st.session_state.chat_messages_2.append({"role": "assistant", "content": assistant_response})
