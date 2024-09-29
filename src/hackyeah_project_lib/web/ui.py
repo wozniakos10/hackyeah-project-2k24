@@ -16,6 +16,7 @@ from hackyeah_project_lib.utils.logger import get_configured_logger
 from hackyeah_project_lib.utils.s3 import S3
 from hackyeah_project_lib.video_processing.reduce_mp4_size import compress_video
 from hackyeah_project_lib.video_processing.video_to_audio import VideoConverter
+from hackyeah_project_lib.video_processing.gcp import send_message_to_gemini
 
 logger = get_configured_logger("app_logger", log_file="logs/app.log", level=logging.DEBUG)
 
@@ -166,3 +167,8 @@ if st.session_state["file_processed"]:
                 assistant_response = llm.ask_openai(user_question, st.session_state["pause_interval"])
                 st.markdown(assistant_response)
                 st.session_state.chat_messages.append({"role": "assistant", "content": assistant_response})
+
+    #dev
+    temporary_s3_file_path = "https://hackyeah-mt.s3.amazonaws.com/videos/HY_2024_film_02.mp4"
+    response = send_message_to_gemini(temporary_s3_file_path)
+    #dev
