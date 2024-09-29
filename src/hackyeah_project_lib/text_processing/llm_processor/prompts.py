@@ -15,6 +15,7 @@ class TextPropertiesDescriptions(BaseModel):
     passive_voice: str
     complicated_words: str
     complicated_sentences: str
+    english_translation: str
 
 
 class SystemPrompts(BaseModel):
