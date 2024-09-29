@@ -14,7 +14,7 @@ def transcribe_audio_srt(file_path: str) -> str:
         return cast(str, transcript)
 
 
-# ANOTHER APPROACH:
+# # ANOTHER APPROACH:
 # from datetime import timedelta
 # import os
 # import whisper

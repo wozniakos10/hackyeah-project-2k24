@@ -1,9 +1,12 @@
 from typing import cast
 
+import json
 import vertexai
 from google.oauth2 import service_account
-from vertexai.generative_models import GenerativeModel, Part, SafetySetting
-
+from vertexai.generative_models import GenerativeModel, Part, SafetySetting, GenerationConfig
+from hackyeah_project_lib.video_processing.prompts import gemini_prompt
+from hackyeah_project_lib.video_processing.schemas import video_processing_response_schema
+from hackyeah_project_lib.video_processing.models import VideoProcessingResponse
 AUTH_JSON = {
     "type": "service_account",
     "project_id": "rich-ceiling-437018-b5",
@@ -41,39 +44,6 @@ AUTH_JSON = {
     "universe_domain": "googleapis.com",
 }
 
-
-def generate() -> None:
-    info = AUTH_JSON
-    storage_cred = service_account.Credentials.from_service_account_info(info)
-    vertexai.init(project="rich-ceiling-437018-b5", credentials=storage_cred)
-    model = GenerativeModel(
-        "gemini-1.5-pro-002",
-    )
-    responses = model.generate_content(
-        [video1, text1],
-        generation_config=generation_config,
-        safety_settings=safety_settings,
-        stream=True,
-    )
-
-    for response in responses:
-        print(response.text, end="")
-
-
-video1 = Part.from_uri(
-    mime_type="video/mp4",
-    uri="https://hackyeah-mt.s3.amazonaws.com/HY_2024_film_01.mp4",
-)
-text1 = """Look through each frame in the video carefully and answer the question.
-Only base your answers strictly on what information is available in the video attached.
-Do not make up any information that is not part of the video and do not be too verbose. """
-
-generation_config = {
-    "max_output_tokens": 8192,
-    "temperature": 1,
-    "top_p": 0.95,
-}
-
 safety_settings = [
     SafetySetting(
         category=SafetySetting.HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold=SafetySetting.HarmBlockThreshold.OFF
@@ -92,8 +62,15 @@ safety_settings = [
 ]
 
 
-def send_message_to_gemini(file_url: str, system_message: str) -> str:
+def send_message_to_gemini(file_url: str, system_message: str = gemini_prompt) -> VideoProcessingResponse:
     info = AUTH_JSON
+    generation_config = GenerationConfig(
+        max_output_tokens=8192,
+        temperature=0.6,
+        top_p=0.95,
+        response_mime_type="application/json",
+        response_schema=video_processing_response_schema
+    )
     storage_cred = service_account.Credentials.from_service_account_info(info)
     vertexai.init(project="rich-ceiling-437018-b5", credentials=storage_cred)
 
@@ -104,16 +81,14 @@ def send_message_to_gemini(file_url: str, system_message: str) -> str:
         uri=file_url,
     )
 
-    prompt = f"""{system_message}
+    prompt = f"""{system_message}"""
 
-    Questions:
-    - What language is the person speaking and what does the person say at that time?"""
-
-    responses = model.generate_content(
+    response = model.generate_content(
         [video_part, prompt],
         generation_config=generation_config,
         safety_settings=safety_settings,
         stream=False,
     )
 
-    return cast(str, responses.text)
+    #convert response.text (str) to json then to VideoProcessingResponse
+    return VideoProcessingResponse(**json.loads(response.text))

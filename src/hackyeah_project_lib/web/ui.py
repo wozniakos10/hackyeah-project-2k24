@@ -15,6 +15,7 @@ from hackyeah_project_lib.utils.logger import get_configured_logger
 from hackyeah_project_lib.utils.s3 import S3
 from hackyeah_project_lib.video_processing.reduce_mp4_size import compress_video
 from hackyeah_project_lib.video_processing.video_to_audio import VideoConverter
+from hackyeah_project_lib.video_processing.gcp import send_message_to_gemini
 
 logger = get_configured_logger("app_logger", log_file="logs/app.log", level=logging.DEBUG)
 
@@ -128,3 +129,8 @@ if uploaded_file is not None:
 
     # Odtwarzanie pliku audio
     st.video(file_path, format="video/mp4")
+
+    #dev
+    temporary_s3_file_path = "https://hackyeah-mt.s3.amazonaws.com/videos/HY_2024_film_02.mp4"
+    response = send_message_to_gemini(temporary_s3_file_path)
+    #dev
