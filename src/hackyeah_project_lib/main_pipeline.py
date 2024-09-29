@@ -150,9 +150,24 @@ class MainPipeline:
         self.describe_step(desc="Obliczenie metryk zrozumiałości tekstu...")
         simple_speech_metrics = SimpleSpeechMetricsProcessor(transcription).get_all_metrics()
 
-        # Step 13: Video processing
-        self.describe_step(desc="Przetwarzanie wideo...")
-        video_processing = send_message_to_gemini(file_url=s3_file_url)
+        # Step 11: Video processing
+        try:
+            self.describe_step(desc="Przetwarzanie wideo...")
+            video_processing = send_message_to_gemini(file_url=s3_file_url)
+        # Problem with gemini
+        except Exception as e:
+            video_processing = VideoProcessingResponse(
+                speech_tone=" ",
+                face_mimic=" ",
+                gesticulation=" ",
+                emotions=" ",
+                hate_speech=" ",
+                speech_quality=" ",
+                discrepancies=" ",
+                noises=" ",
+                speech_pace=" ",
+                own_suggestions=" ",
+            )
 
         value = PipelineResponseModel(
             s3_bucket_path=s3_object_name,
@@ -170,5 +185,5 @@ class MainPipeline:
             simple_speech_metrics=simple_speech_metrics,
             video_processing=video_processing,
         )
-        self.logger.info(f"Formatted output: {json.dumps(value.model_dump(mode='python'),indent=2)}")
+        self.logger.info(f"Formatted output: {json.dumps(value.model_dump(mode='python'), indent=2)}")
         return value
