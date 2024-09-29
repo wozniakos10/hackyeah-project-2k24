@@ -1,6 +1,7 @@
-from typing import cast
+from typing import Any, cast
 
-from openai import OpenAI
+from dotenv import load_dotenv
+from openai import ChatCompletion, OpenAI
 
 from hackyeah_project_lib.text_processing.llm_processor.models import RefinedTextProperties, TextPropertiesDetectedByLLM
 from hackyeah_project_lib.text_processing.llm_processor.prompts import Prompts
@@ -8,6 +9,7 @@ from hackyeah_project_lib.text_processing.llm_processor.prompts import Prompts
 
 class LLMProcessor:
     def __init__(self) -> None:
+        load_dotenv()
         self.openai_client = OpenAI()
 
     @staticmethod
@@ -44,5 +46,26 @@ class LLMProcessor:
                 phrase
                 for phrase in llm_text_properties.passive_voice
                 if self._check_for_common_passive_voice_properties(phrase)
-            ]
+            ],
         )
+
+    # Funkcja wysyłająca pytanie do OpenAI
+    def ask_openai(self, question: str, json_data: dict[str, Any]):
+        # Połącz pytanie użytkownika z danymi o manipulacjach
+        content = f"Użytkownik zapytał: '{question}'. Oto dane dotyczące manipulacji w wideo:\n{json_data}\nOpisz manipulacje wideo na podstawie tego pytania."
+
+        response = self.openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Jesteś ekspertem od analizy manipulacji w wideo. Korzystając z dostarczonych informacji JSON"
+                    "odpowiedz użytkownikowi na zadane pytanie dotyczące manipulacji w udostępionym przez niego video. Możesz korzystać tylko z dostarczonych"
+                    "przez nas danych. Nie możesz odpowiedzieć na pytanie nie dotyczące manipulacji video! Jeśli użytkownik zada pytanie nie"
+                    "związane z tematem, powiedz mu ze nie mozesz odpowiedziec na to pytanie.",
+                },
+                {"role": "user", "content": content},
+            ],
+        )
+
+        return response.choices[0].message.content
