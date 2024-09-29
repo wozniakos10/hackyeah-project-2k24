@@ -63,7 +63,8 @@ with left_col:
 
         st.session_state["messages"] = []
         llm = LLMProcessor()
-        st.video(pipeline_output.mp4_path, format="video/mp4")
+        temp_path = pipeline_output.mp4_path.replace(".mp4", "_with_subtitles.mp4")
+        st.video(temp_path, format="video/mp4")
 
         # Chat interface
         if "chat_messages" not in st.session_state:
