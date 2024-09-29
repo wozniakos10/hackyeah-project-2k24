@@ -121,10 +121,38 @@ with right_col:
         st.caption("Sugerowany wiek odbiorcy oszacowano na podstawie średniej ważonej metryk Gunninga i Kincaida.")
 
         st.divider()
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(
+                label="Przerwy w mówieniu",
+                value="Tak" if not pipeline_output.audio_pauses.raw_score else "Nie",
+            )
+            st.write(pipeline_output.audio_pauses.interpretation)
+
+            st.metric(
+                label="Zmiana tematu",
+                value="Tak" if pipeline_output.llm_analysis.topic_changed_during_conversation else "Nie",
+            )
+            if pipeline_output.llm_analysis.topic_changed_during_conversation:
+                st.write("W danym nagraniu tematy wypowiedzi zmieniali się następująco:")
+                for topic in pipeline_output.llm_analysis.list_of_topics:
+                    st.write(f"> :red[_{topic}_]")
+            else:
+                st.write("W danym nagraniu nie wykryliśmy zmiany tematu wypowiedzi. Temat wideo, to: ")
+                st.write(f"> :green[_{pipeline_output.llm_analysis.list_of_topics[0]}_]")
+
+        with col2:
+            st.write(f"> :blue[_Mimika: {pipeline_output.video_processing.mimika}_]")
+            st.write(f"> :blue[_Ton wypowiedzi: {pipeline_output.video_processing.ton_wypowiedzi}_]")
+            st.write(f"> :blue[_Gestykulacja: {pipeline_output.video_processing.gestykulacja}_]")
+            st.write(f"> :blue[_Emocje: {pipeline_output.video_processing.gestykulacja}_]")
+            st.write(f"> :blue[_Mowa nienawiści: {pipeline_output.video_processing.gestykulacja}_]")
+            # st.write(f"> :blue[_Zdenerwowania: {pipeline_output.video_processing.zdenerwowania}_]")
+
+        st.divider()
         tab_jcn, tab_rep, tab_passive = st.tabs(
             ["Liczby, żargon i skomplikowane słowa", "Powtórzenia", "Liczba bierna"]
         )
-
         with tab_jcn:
             annotated_text(*pipeline_output.llm_analysis.annotated_text_jcn)
         with tab_rep:
