@@ -1,3 +1,4 @@
+import json
 import logging
 from pathlib import Path
 
@@ -13,13 +14,14 @@ from hackyeah_project_lib.text_processing.llm_processor.models import RefinedTex
 from hackyeah_project_lib.text_processing.llm_processor.processor import LLMProcessor
 from hackyeah_project_lib.text_processing.speech_metrics import SimpleSpeechMetricsProcessor, SpeechMetricsModel
 from hackyeah_project_lib.utils.logger import get_configured_logger
+from hackyeah_project_lib.utils.s3 import S3
 from hackyeah_project_lib.video_processing import count_people_on_video
 from hackyeah_project_lib.video_processing.count_people_on_video import PeopleCountModel
+from hackyeah_project_lib.video_processing.gcp import send_message_to_gemini
+from hackyeah_project_lib.video_processing.models import VideoProcessingResponse
 from hackyeah_project_lib.video_processing.reduce_mp4_size import compress_video
 from hackyeah_project_lib.video_processing.video_to_audio import VideoConverter
-from hackyeah_project_lib.web.ui import s3_class
-from hackyeah_project_lib.video_processing.models import VideoProcessingResponse
-from hackyeah_project_lib.video_processing.gcp import send_message_to_gemini
+
 
 class PipelineResponseModel(BaseModel):
     s3_bucket_path: str
@@ -70,6 +72,7 @@ class MainPipeline:
         if progress_bar is None:
             progress_bar = st.delta_generator.DeltaGenerator(root_container=None)
         self.progress_bar = progress_bar
+        self.s3_class = S3()
 
     def describe_step(self, desc: str) -> None:
         self.step_counter += 1
@@ -97,9 +100,9 @@ class MainPipeline:
         # Step 3: Upload file to S3
         self.describe_step(desc="Przesyłanie pliku do chmury...")
         s3_object_name = f"app/{self.unique_id}/{input_video_path.name}"
-        if not s3_class.upload_file(file_name=input_video_path, object_name=s3_object_name):
+        if not self.s3_class.upload_file(file_name=input_video_path.as_posix(), object_name=s3_object_name):
             raise MainPipelineException("Error while uploading file to S3.")
-        s3_file_url = s3_class.get_file_url(object_name=s3_object_name)
+        s3_file_url = self.s3_class.get_file_url(object_name=s3_object_name)
 
         # Step 4: Count number of people
         self.describe_step(desc="Zliczanie ludzie na wideo...")
@@ -137,8 +140,7 @@ class MainPipeline:
         self.describe_step(desc="Przetwarzanie wideo...")
         video_processing = send_message_to_gemini(file_url=s3_file_url)
 
-
-        return PipelineResponseModel(
+        value = PipelineResponseModel(
             s3_bucket_path=s3_object_name,
             mp4_path=input_video_path.as_posix(),
             mp3_path=mp3_path,
@@ -152,3 +154,5 @@ class MainPipeline:
             simple_speech_metrics=simple_speech_metrics,
             video_processing=video_processing,
         )
+        self.logger.info(f"Formatted output: {json.dumps(value.model_dump(mode='python'),indent=2)}")
+        return value

@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 class AudioVolumeModel(BaseModel):
-    volume_value: int
+    volume_value: float
     volume_interpretation: str
 
 
