@@ -103,3 +103,24 @@ class LLMProcessor:
         )
 
         return cast(str, response.choices[0].message.content)
+    
+    def ask_openai_for_multiple_videos(self, question: str, json_data_1: dict[str, Any], json_data_2: dict[str, Any]):
+        # Połącz pytanie użytkownika z danymi o manipulacjach
+        content = f"Użytkownik zapytał: '{question}'. Oto dane dotyczące wideo numer 1:\n{json_data_1}\nOto dane dotyczące wideo numer 2:\n{json_data_2}\nPorównaj te dwa wideo na podstawie tego pytania."
+
+        response = self.openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Jesteś ekspertem od analizy manipulacji w wideo. Korzystając z dostarczonych informacji JSON"
+                    "odpowiedz użytkownikowi na zadane pytanie dotyczące porównania wideo. Możesz korzystać tylko z dostarczonych"
+                    "przez nas danych. Jeśli użytkownik zada pytanie nie"
+                    "związane z tematem, powiedz mu ze nie mozesz odpowiedziec na to pytanie.",
+                },
+                {"role": "user", "content": content},
+            ],
+        )
+
+        return response.choices[0].message.content
+

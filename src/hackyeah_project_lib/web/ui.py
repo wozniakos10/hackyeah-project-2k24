@@ -13,7 +13,6 @@ from hackyeah_project_lib.video_processing.gcp import send_message_to_gemini
 
 logger = get_configured_logger("app_logger", log_file="logs/app.log", level=logging.DEBUG)
 
-
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 llm = LLMProcessor()
 
@@ -70,7 +69,8 @@ if uploaded_file is not None and not st.session_state["file_processed"]:
     st.chat_message("assistant").write("TRANSCRIPTION:\n" + pipeline_output.transcription)
 
     # Display video
-    st.video(pipeline_output.mp4_path, format="video/mp4")
+    mp4_path_with_subtitles = pipeline_output.mp4_path.replace(".mp4", "_with_subtitles.mp4")
+    st.video(mp4_path_with_subtitles, format="video/mp4")
 
     # Chat interface
     if "chat_messages" not in st.session_state:

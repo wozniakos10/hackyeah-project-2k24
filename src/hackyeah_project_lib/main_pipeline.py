@@ -126,7 +126,7 @@ class MainPipeline:
 
         # Step 7: Speech to text transcription (SRT)
         self.describe_step(desc="Transkrypcja mowy na tekst (SRT)...")
-        transcription_srt = transcribe_audio_srt(mp3_path)
+        transcription_srt = transcribe_audio_srt(mp3_path, input_video_path.as_posix())
 
         # Step 8: Speech to text transcription (normal)
         self.describe_step(desc="Transkrypcja mowy na tekst (normal)...")
