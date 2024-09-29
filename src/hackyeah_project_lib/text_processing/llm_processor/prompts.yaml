@@ -14,8 +14,8 @@ text_properties_descriptions:
 
     If the speech does not contain clear topics, leave an empty list.
   numbers: |
-    A list of numerical values mentioned in the speech, including all integers, years, and quantities. If there are no
-    numbers in the text, leave an empty list.
+    A list of numerical values mentioned in the speech, including all integers, years, and quantities. Write them
+    exactly as they are written in text. If there are no numbers in the text, leave an empty list.
   jargon: |
     A list of specialized or technical terms used in the speech that may be unfamiliar to people not associated with
     the given industry. This does not include very well-known and commonly used names nor cases where the text precisely

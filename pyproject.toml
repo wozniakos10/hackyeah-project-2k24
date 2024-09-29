@@ -33,6 +33,9 @@ opencv-python = "^4.10.0.84"
 ultralytics = "^8.2.103"
 pydub = "^0.25.1"
 ffmpeg-python = "^0.2.0"
+plotly = "^5.24.1"
+st-annotated-text = "^4.0.1"
+webvtt-py = "^0.5.1"
 
 [build-system]
 requires = ["poetry-core"]

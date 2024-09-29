@@ -7,8 +7,11 @@ from pydantic import BaseModel
 
 from hackyeah_project_lib.audio_processing.audio_converter import AudioConverter
 from hackyeah_project_lib.audio_processing.audio_features import AudioVolumeModel, AudioVolumeProcessor, PauseDetection
-from hackyeah_project_lib.audio_processing.transcription import transcribe_audio
-from hackyeah_project_lib.audio_processing.transcription_srt import transcribe_audio_srt
+from hackyeah_project_lib.audio_processing.transcription_srt import (
+    TranscriptionVTTModel,
+    srt_to_webvtt_format,
+    transcribe_audio_srt,
+)
 from hackyeah_project_lib.audio_processing.xgboost_pause_detection import XGBoostClassifier, XGBoostPauseClassifierModel
 from hackyeah_project_lib.text_processing.llm_processor.models import RefinedTextProperties
 from hackyeah_project_lib.text_processing.llm_processor.processor import LLMProcessor
@@ -31,8 +34,9 @@ class PipelineResponseModel(BaseModel):
     people_count: PeopleCountModel
     audio_volume: AudioVolumeModel
     audio_pauses: XGBoostPauseClassifierModel
-    transcription_srt: str
     transcription: str
+    transcription_srt: str
+    transcription_vtt: TranscriptionVTTModel
     llm_analysis: RefinedTextProperties
     simple_speech_metrics: SpeechMetricsModel
     video_processing: VideoProcessingResponse
@@ -102,7 +106,7 @@ class MainPipeline:
         s3_object_name = f"app/{self.unique_id}/{input_video_path.name}"
         if not self.s3_class.upload_file(file_name=input_video_path.as_posix(), object_name=s3_object_name):
             raise MainPipelineException("Error while uploading file to S3.")
-        s3_file_url = self.s3_class.get_file_url(object_name=s3_object_name)
+        s3_file_url = self.s3_class.get_file_url(object_name=s3_object_name) or str()
 
         # Step 4: Count number of people
         self.describe_step(desc="Zliczanie ludzie na wideo...")
@@ -120,13 +124,14 @@ class MainPipeline:
         xgboost_classifier = XGBoostClassifier()
         audio_pauses = xgboost_classifier.format_output(xgboost_classifier.predict(pause_interval_info))
 
-        # Step 7: Speech to text transcription (SRT)
+        # Step 7: Speech to text transcription
         self.describe_step(desc="Transkrypcja mowy na tekst (SRT)...")
         transcription_srt = transcribe_audio_srt(mp3_path)
 
-        # Step 8: Speech to text transcription (normal)
+        # Step 8: SRT to text convertion
         self.describe_step(desc="Transkrypcja mowy na tekst (normal)...")
-        transcription = transcribe_audio(mp3_path)
+        vtt = srt_to_webvtt_format(transcription_srt)
+        transcription = " ".join([caption.text for caption in vtt.captions])
 
         # Step 9: LLM metrics
         self.describe_step(desc="Analiza wyodrębnionego tekstu...")
@@ -137,7 +142,7 @@ class MainPipeline:
         simple_speech_metrics = SimpleSpeechMetricsProcessor(transcription).get_all_metrics()
 
         # Step 11: Video processing
-        self.describe_step(desc="Przetwarzanie wideo...")
+        self.describe_step(desc="Analiza zachowania osoby na wideo...")
         video_processing = send_message_to_gemini(file_url=s3_file_url)
 
         value = PipelineResponseModel(
@@ -148,8 +153,9 @@ class MainPipeline:
             people_count=people_count,
             audio_volume=audio_volume,
             audio_pauses=audio_pauses,
-            transcription_srt=transcription_srt,
             transcription=transcription,
+            transcription_srt=transcription_srt,
+            transcription_vtt=vtt,
             llm_analysis=llm_analysis_result,
             simple_speech_metrics=simple_speech_metrics,
             video_processing=video_processing,
