@@ -17,7 +17,16 @@ logger = get_configured_logger("app_logger", log_file="logs/app.log", level=logg
 OPENAI_API_KEY = settings.OPENAI_API_KEY
 llm = LLMProcessor()
 
-st.title("💬 Chat Ekspert od Manipulacji w Wideo")
+# Set the page configuration
+st.set_page_config(
+    page_title="SpeechMaster",  # Title that appears in the tab
+    page_icon="💬",  # Emoji or URL to an image (favicon)
+    layout="centered",  # Layout of the page ('centered' or 'wide')
+    initial_sidebar_state="auto",  # Sidebar state ('auto', 'expanded', 'collapsed')
+)
+
+st.title("💬 SpeechMaster")
+st.write("### Asystent do oceny jakości wystąpień publicznych")
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "assistant", "content": "Dodaj plik aby rozpocząć"}]
@@ -66,14 +75,14 @@ if uploaded_file is not None and not st.session_state["file_processed"]:
     # Chat interface
     if "chat_messages" not in st.session_state:
         st.session_state.chat_messages = [
-            {"role": "assistant", "content": "Witaj! Zadaj pytanie dotyczące manipulacji w wideo."}
+            {"role": "assistant", "content": "Cześć! Czy masz jakieś pytania dotyczące analizowanego nagrania?"}
         ]
 
     for msg in st.session_state.chat_messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    if user_question := st.chat_input("Zadaj pytanie dotyczące manipulacji w wideo"):
+    if user_question := st.chat_input("Zadaj pytanie w zakresie analizy nagrania"):
         st.session_state.chat_messages.append({"role": "user", "content": user_question})
         with st.chat_message("user"):
             st.markdown(user_question)
