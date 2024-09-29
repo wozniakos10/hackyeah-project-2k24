@@ -10,7 +10,7 @@ from hackyeah_project_lib.audio_processing.audio_features import AudioVolumeMode
 from hackyeah_project_lib.audio_processing.transcription import transcribe_audio
 from hackyeah_project_lib.audio_processing.transcription_srt import transcribe_audio_srt
 from hackyeah_project_lib.audio_processing.xgboost_pause_detection import XGBoostClassifier, XGBoostPauseClassifierModel
-from hackyeah_project_lib.text_processing.llm_processor.models import RefinedTextProperties
+from hackyeah_project_lib.text_processing.llm_processor.models import RefinedTextProperties, TextQuestionByLLm
 from hackyeah_project_lib.text_processing.llm_processor.processor import LLMProcessor
 from hackyeah_project_lib.text_processing.speech_metrics import SimpleSpeechMetricsProcessor, SpeechMetricsModel
 from hackyeah_project_lib.utils.logger import get_configured_logger
@@ -33,6 +33,8 @@ class PipelineResponseModel(BaseModel):
     audio_pauses: XGBoostPauseClassifierModel
     transcription_srt: str
     transcription: str
+    key_words_phrases: str
+    questions_generated: TextQuestionByLLm
     llm_analysis: RefinedTextProperties
     simple_speech_metrics: SpeechMetricsModel
     video_processing: VideoProcessingResponse
@@ -47,15 +49,17 @@ class MainPipeline:
         0: 0,
         1: 5,
         2: 20,
-        3: 30,
-        4: 35,
+        3: 25,
+        4: 30,
         5: 40,
         6: 45,
-        7: 55,
+        7: 50,
         8: 65,
-        9: 75,
-        10: 80,
-        11: 100,
+        9: 70,
+        10: 75,
+        11: 80,
+        12: 90,
+        13: 100,
     }
     step_counter: int = 0
 
@@ -128,15 +132,25 @@ class MainPipeline:
         self.describe_step(desc="Transkrypcja mowy na tekst (normal)...")
         transcription = transcribe_audio(mp3_path)
 
-        # Step 9: LLM metrics
+        # Step 9: Transcription summarization
+        self.describe_step(desc="Podsumowanie tekstu po transkrypcji...")
+
+        key_words_phrases = LLMProcessor().get_key_words(transcription)
+
+        # Step 10: Question generation
+        self.describe_step(desc="Tworzenie pytan do tekstu...")
+
+        questions_generated = LLMProcessor().get_10_question(transcription)
+
+        # Step 11: LLM metrics
         self.describe_step(desc="Analiza wyodrębnionego tekstu...")
         llm_analysis_result = LLMProcessor().get_refined_text_properties(transcription)
 
-        # Step 10: Calculate speech metrics
+        # Step 12: Calculate speech metrics
         self.describe_step(desc="Obliczenie metryk zrozumiałości tekstu...")
         simple_speech_metrics = SimpleSpeechMetricsProcessor(transcription).get_all_metrics()
 
-        # Step 11: Video processing
+        # Step 13: Video processing
         self.describe_step(desc="Przetwarzanie wideo...")
         video_processing = send_message_to_gemini(file_url=s3_file_url)
 
@@ -150,6 +164,8 @@ class MainPipeline:
             audio_pauses=audio_pauses,
             transcription_srt=transcription_srt,
             transcription=transcription,
+            key_words_phrases=key_words_phrases,
+            questions_generated=questions_generated,
             llm_analysis=llm_analysis_result,
             simple_speech_metrics=simple_speech_metrics,
             video_processing=video_processing,
