@@ -13,8 +13,8 @@ HackYeah 2024 było jubileuszową, 10-tą edycją tego wydarzenia, która okaza�
 Podczas intensywnego weekendu hackathonowego uczestnicy mieli do dyspozycji wsparcie od blisko 200 mentorów oraz zapas energii zapewniony przez 700 kilogramów ciastek, 6000 filiżanek kawy i 4000 kawałków pizzy. W tym roku, zespoły musiały wykazać się kreatywnością w rozwiązywaniu problemów i stawianiu czoła wyzwaniom w takich kategoriach, jak np. fintech, zdrowie, edukacja, czy rozwiązywanie problemów społecznych.
 
 <p float="left">
-  <img src="https://github.com/user-attachments/assets/47820df7-3d21-4373-9338-29376bb3d69f" height="320" />
-  <img src="https://github.com/user-attachments/assets/d2657d96-d280-4e5b-8341-be157b4fa46f" height="320" /> 
+  <img src="https://github.com/user-attachments/assets/47820df7-3d21-4373-9338-29376bb3d69f" height="240" />
+  <img src="https://github.com/user-attachments/assets/d2657d96-d280-4e5b-8341-be157b4fa46f" height="240" /> 
 </p>
 
 ## Zespół "Zryw" podejmuje wyzwanie \<Go [BreakWordTraps] FinTax>
@@ -45,9 +45,9 @@ Aby uświetnić nasze osiągnięcia, poniżej zamieszczamy kilka zdjęć z wydar
 - [Prezentacja: Speech Master by Zryw](https://github.com/wozniakos10/hackyeah-project-2k24/blob/main/SpeechMasterByZryw.pdf)
 
 <p float="left">
-  <img src="https://github.com/user-attachments/assets/a555c029-d471-4fab-95f3-9268db8ff56f" height="210" />
-  <img src="https://github.com/user-attachments/assets/e1a2e715-c9f3-4685-85d3-f293706e991e" height="210" /> 
-  <img src="https://github.com/user-attachments/assets/e259c7e4-f622-4801-a413-4178b1eb01b6" height="210" />
+  <img src="https://github.com/user-attachments/assets/a555c029-d471-4fab-95f3-9268db8ff56f" height="150" />
+  <img src="https://github.com/user-attachments/assets/e1a2e715-c9f3-4685-85d3-f293706e991e" height="150" /> 
+  <img src="https://github.com/user-attachments/assets/e259c7e4-f622-4801-a413-4178b1eb01b6" height="150" />
 </p>
 
 **Wideo prezentujące rozwiązanie na YouTube**
